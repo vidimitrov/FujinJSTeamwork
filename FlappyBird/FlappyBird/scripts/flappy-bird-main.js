@@ -1,17 +1,19 @@
 ﻿/// <reference path="kinetic-v5.1.0.min.js" />
 window.onload = function () {
     var stage,
+    stageWidth = 400,
+    stageHeight =  500,
     gameSpeed,
     currentState,
     ninja, //ninja 
     obstacles = [], //pipes
-    backgroundLayer,
+    groundLayer,
     ninjaLayer,
     obstaclesLayer,
     currentScore,
     highScore,
-    gravity,
-    playerJumpAcceleration,
+    gravity = 4,
+    playerJumpAcceleration = 100,
     gameStates = {
         InGame: 1,
         HighScores: 2,
@@ -19,42 +21,37 @@ window.onload = function () {
         GameOver: 4,
     };
 
-    initalize(400, 500);
+    initalize(stageWidth, stageHeight);
 
-    function Ninja(x, y) {
+    function Ninja(x, y, img) {
         this.x = x,
         this.y = y,
-        this.jumpLength = 60,
-        this.img = new Kinetic.Rect({
-            x: this.x,
-            y: this.y,
-            width: 50,
-            height: 50,
-            fill: 'green',
-            stroke: 'black',
-            strokeWidth: 4
+        this.jumpLength = playerJumpAcceleration, //refactor
+        this.img = new Kinetic.Image({ //refactor!!
+            x: 0,
+            y: 0,
+            image: img,
+            width: 106,
+            height: 118
         })
         this.jump = function () {
             this.y -= this.jumpLength;
-            if (this.y  < 0) {
+            if (this.y < 0) {
                 this.y = 0;
             }
 
         }
         this.update = function () {
 
-            if (this.y + this.img.height() < stage.height()) {
-                this.y += 3;
+            if (this.y + this.img.height() + 70 < stage.height()) {
+                this.y += gravity;
             }
-
         }
     }
 
-    var ninjaAnimation = new Kinetic.Animation(update, ninjaLayer);
+    var ninjaAnimation = new Kinetic.Animation(update, ninjaLayer); //set time
     ninjaAnimation.start();
-    document.addEventListener('click', function () {
-        ninja.jump();
-    });
+
 
     function initalize(width, height) {
 
@@ -65,17 +62,25 @@ window.onload = function () {
         });
 
         ninjaLayer = new Kinetic.Layer();
-        backgroundLayer = new Kinetic.Layer();
+        groundLayer = new Kinetic.Layer();
 
-        ninja = new Ninja(75, 150);
+
+        var imageObj = new Image();   //refactor
+        imageObj.src = 'imgs/ninja.png';
+        ninja = new Ninja(75, 150, imageObj);
         ninjaLayer.add(ninja.img);
         stage.add(ninjaLayer);
+
+
+        document.addEventListener('click', function () {
+            ninja.jump();
+        });
     }
 
     function update() {
         //obstacle update
         ninja.update();
-        ninja.img.setY(ninja.y);
+        ninja.img.setY(ninja.y); //refactor
 
     }
 }

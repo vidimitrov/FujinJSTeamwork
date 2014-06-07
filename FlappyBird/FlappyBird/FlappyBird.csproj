@@ -57,6 +57,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="imgs\Thumbs.db" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -66,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="flappy-bird.html" />
+    <Content Include="imgs\ninja.png" />
     <Content Include="scripts\flappy-bird-main.js" />
     <Content Include="scripts\kinetic-v5.1.0.min.js" />
     <Content Include="scripts\raphael-min.js" />
