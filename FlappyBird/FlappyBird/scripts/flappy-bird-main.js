@@ -84,22 +84,25 @@ window.onload = function () {
         maxPipeHeight = stage.height() * 3 / 4;
         gapHeight = ninja.img.height() * 2;
 
-        //var groundImage = new Image();
-        //groundImage.src = 'imgs/ninja.png';
 
-        //var grass = new Ninja(100, 100, ninjaImage, 200, 100, 5);
+        // Ground
+        groundLayer = new Kinetic.Layer();
 
-        ////var grassKinetic = new Kinetic.Rect({
-        ////    x: 150,
-        ////    y: 150, 
-        ////    width: 50,
-        ////    height: 50,
-        ////    fill: 'yellowgreen'
+        var groundImageObj = new Image();
+        groundImageObj.onload = function () {
+            var grassImg = new Kinetic.Image({
+                image: groundImageObj,
+                x: 0,
+                y: stageHeight - groundLevel,
+                width: stageWidth,
+                height: groundLevel
 
-        ////});
+            });
+            groundLayer.add(grassImg);
+            stage.add(groundLayer);
+        }
+        groundImageObj.src = 'imgs/grass.png';
 
-        //groundLayer.add(grass);
-        //stage.add(groundLayer);
         document.addEventListener('click', function () {
             ninja.jump();
         });
