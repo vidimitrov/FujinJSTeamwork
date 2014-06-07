@@ -1,0 +1,6 @@
+C:\Users\alexander\Documents\GitHub\FujinJSTeamwork\FlappyBird\FlappyBird\bin\FlappyBird.dll.config
+C:\Users\alexander\Documents\GitHub\FujinJSTeamwork\FlappyBird\FlappyBird\bin\FlappyBird.dll
+C:\Users\alexander\Documents\GitHub\FujinJSTeamwork\FlappyBird\FlappyBird\bin\FlappyBird.pdb
+C:\Users\alexander\Documents\GitHub\FujinJSTeamwork\FlappyBird\FlappyBird\obj\Debug\FlappyBird.csprojResolveAssemblyReference.cache
+C:\Users\alexander\Documents\GitHub\FujinJSTeamwork\FlappyBird\FlappyBird\obj\Debug\FlappyBird.dll
+C:\Users\alexander\Documents\GitHub\FujinJSTeamwork\FlappyBird\FlappyBird\obj\Debug\FlappyBird.pdb
