@@ -3,12 +3,15 @@ window.onload = function () {
     var stage,
     stageWidth = 400,
     stageHeight = 500,
-    gameSpeed,
+    gameSpeed = 1,
+    ninjaHeight = 100,
     currentState,
     ninja, //ninja 
     obstacles = [], //pipes
+    grass,
     groundLevel = 70,
     groundLayer,
+    groundImageObj,
     ninjaLayer,
     obstaclesLayer,
     currentScore,
@@ -61,49 +64,67 @@ window.onload = function () {
     var obstacleAnimation = new Kinetic.Animation(updateObstacles, obstaclesLayer);
     obstacleAnimation.start();
 
+    var groundAnimation = new Kinetic.Animation(groundUpdate, groundLayer);
+    groundAnimation.start();
 
     function initalize(width, height) {
-
+        // Defining Stage
         stage = new Kinetic.Stage({
             container: 'container',
             width: width,
             height: height,
         });
 
+        // defining obsticle sizes
+        gapHeight = ninjaHeight * 1.5;
+        totalObstacleHeight = stage.height() - groundLevel - gapHeight;
+
+        // Defininf Layers
         ninjaLayer = new Kinetic.Layer();
         obstaclesLayer = new Kinetic.Layer();
         groundLayer = new Kinetic.Layer();
 
+        // Defining Images
         var ninjaImage = new Image();
         ninjaImage.src = 'imgs/ninja.png';
-        ninja = new Ninja(75, 150, ninjaImage, 100, 100, playerJumpAcceleration);
+        groundImageObj = new Image();
+
+        // initiating Objects
+        ninja = new Ninja(75, 150, ninjaImage, 100, ninjaHeight, playerJumpAcceleration);
+        grass = new Grass(0, stageHeight - (groundLevel * 1.5) , 'imgs/grass.png', stageWidth * 2, groundLevel * 1.5, gameSpeed * 5)
+
+        // Drawing Layers
         ninjaLayer.add(ninja.img);
         stage.add(ninjaLayer);
-        gapHeight = ninja.img.height() * 1.5;
-        totalObstacleHeight = stage.height() - groundLevel - gapHeight;
 
+        groundImageObj.onload = function () {
+            var grassImg = new Kinetic.Image({
+                image: groundImageObj,
+                x: grass.x,
+                y: grass.y,
+                width: grass.width,
+                height: grass.height
+            });
+            groundLayer.add(grassImg);
+            stage.add(groundLayer);
+        }
+        groundImageObj.src = grass.imgSrc;
 
-        var groundImage = new Image();
-        groundImage.src = 'imgs/ninja.png';
-
-        var grassKinetic = new Kinetic.Image({
-            x: 100,
-            y: 100,
-            image: ninjaImage,
-            width: 100,
-            height: 100
-        });
-
-       
-        groundLayer.add(grassKinetic);
-        stage.add(groundLayer);
+      
         document.addEventListener('click', function () {
             ninja.jump();
         });
     }
 
+    function groundUpdate() {
+        //ground update
+        grass.update();
+        groundLayer.setX(grass.x);
+    }
+
     function update() {
         //obstacle update
+
         ninja.update();
         ninja.img.setY(ninja.y); //refactor
     }
@@ -124,6 +145,7 @@ window.onload = function () {
             obstaclesLayer.add(currentObstacles[0].img);
             obstaclesLayer.add(currentObstacles[1].img);
             stage.add(obstaclesLayer);
+            obstaclesLayer.moveToBottom();
             frames = 1;
         }
     }
@@ -169,8 +191,24 @@ window.onload = function () {
             fill: 'yellowgreen'
         });
         this.update = function () {
-            this.x -= 5;
+            this.x -= gameSpeed * 5;
         }
     }
 
+    function Grass(x, y, imageSource, width, height, speed) {
+        this.x = x,
+        this.y = y,
+        this.width = width,
+        this.height = height,
+        this.speed = speed,
+        this.imgSrc = imageSource;
+
+
+        this.update = function () {
+            if (this.x <= (-stageWidth)) {
+                this.x += stageWidth;
+            }
+            this.x -= this.speed;
+        }
+    }
 }
