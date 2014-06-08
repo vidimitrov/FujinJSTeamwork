@@ -1,6 +1,7 @@
 ﻿/// <reference path="kinetic-v5.1.0.min.js" />
 window.onload = function () {
     var stage,
+    ninjaPosition = 0,
     stageWidth = 400,
     stageHeight = 500,
     gameSpeed = 1,
@@ -9,6 +10,7 @@ window.onload = function () {
     ninja, //ninja 
     obstacles = [], //pipes
     grass,
+    ninjaImage,
     groundLevel = 70,
     groundLayer,
     groundImageObj,
@@ -85,13 +87,13 @@ window.onload = function () {
         groundLayer = new Kinetic.Layer();
 
         // Defining Images
-        var ninjaImage = new Image();
-        ninjaImage.src = 'imgs/ninja.png';
+        ninjaImage = new Image();
+        //ninjaImage.src = 'imgs/ninja.png';
         groundImageObj = new Image();
 
         // initiating Objects
         ninja = new Ninja(75, 150, ninjaImage, 100, ninjaHeight, playerJumpAcceleration);
-        grass = new Grass(0, stageHeight - (groundLevel * 1.5) , 'imgs/grass.png', stageWidth * 2, groundLevel * 1.5, gameSpeed * 5)
+        grass = new Grass(0, stageHeight - (groundLevel * 2.2) , 'imgs/grass.png', stageWidth * 2, groundLevel * 2.2, gameSpeed * 5)
 
         // Drawing Layers
         ninjaLayer.add(ninja.img);
@@ -128,6 +130,30 @@ window.onload = function () {
         ninja.update();
         ninja.img.setY(ninja.y); //refactor
 
+        //Attempt to animate ninja!!!
+        ninjaPosition+=0.5;
+        switch (ninjaPosition) {
+            //case 1:
+            //case 2: 
+            case 3: ninjaImage.src = 'imgs/ninja1.png'; break;
+            //case 4:
+            //case 5: 
+            case 6: ninjaImage.src = 'imgs/ninja2.png'; break;
+            //case 7:
+            //case 8:
+            case 9: ninjaImage.src = 'imgs/ninja3.png'; break;
+            //case 10:
+            //case 11:
+            case 12: ninjaImage.src = 'imgs/ninja4.png'; break;
+            //case 13:
+            //case 14:
+            case 16: ninjaImage.src = 'imgs/ninja5.png'; break;
+            //case 16:
+            //case 17:
+            case 18: ninjaImage.src = 'imgs/ninja6.png'; break;
+            default: if(ninjaPosition > 18) ninjaPosition = 0 ; break;
+        }
+        
     }
 
     function updateObstacles() {
