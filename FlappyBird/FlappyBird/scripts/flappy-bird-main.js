@@ -18,8 +18,8 @@ window.onload = function () {
     obstaclesLayer,
     currentScore,
     highScore,
-    gravity = 1,
-    playerJumpAcceleration = 100,
+    gravity = 0,
+    playerJumpAcceleration = 5,
     gameStates = {
         InGame: 1,
         HighScores: 2,
@@ -51,7 +51,17 @@ window.onload = function () {
         }).rotateDeg(this.rotationAngle);
 
         this.jump = function () {
-            this.y -= this.jumpSize;
+            if (gravity > 0) {
+                console.log(gravity);
+                gravity -= this.jumpSize;
+
+            }
+            else {
+                gravity = -this.jumpSize;
+                console.log('gravity minimum')
+            }
+
+
             if (this.y < 0) {
                 this.y = 0;
             }
@@ -60,6 +70,7 @@ window.onload = function () {
 
             if (this.y + this.img.height() + groundLevel < stage.height()) {
                 this.y += gravity;
+                gravity+=0.1;
             }
         }
     }
@@ -180,7 +191,7 @@ window.onload = function () {
         }
 
         frames++;
-        if (frames === 100) { //TODO animation frame speed
+        if (frames === 300) { //TODO animation frame speed // magic number here!!!
 
             var currentObstacles = generateObstacles(totalObstacleHeight, gapHeight, minObstacleHeight);
             for (i = 0; i < currentObstacles.length; i++) {
@@ -254,7 +265,7 @@ window.onload = function () {
             fill: 'yellowgreen'
         });
         this.update = function () {
-            this.x -= gameSpeed * 5;
+            this.x -= gameSpeed * 3; // magic number here
         }
     }
 
