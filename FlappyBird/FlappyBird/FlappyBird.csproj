@@ -70,8 +70,13 @@
     <Content Include="flappy-bird.html" />
     <Content Include="imgs\ninja.png" />
     <Content Include="scripts\flappy-bird-main.js" />
+    <Content Include="scripts\jquery.js" />
     <Content Include="scripts\kinetic-v5.1.0.min.js" />
     <Content Include="scripts\raphael-min.js" />
+    <Content Include="sounds\crash.mp3" />
+    <Content Include="sounds\during_play.mp3" />
+    <Content Include="sounds\mouse_click.mp3" />
+    <Content Include="sounds\start_game.mp3" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

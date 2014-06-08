@@ -36,6 +36,8 @@ window.onload = function () {
 
     initalize(stageWidth, stageHeight);
 
+    initializeSound();
+
     function Ninja(x, y, img, width, height, jumpAcceleration) {
         this.x = x,
         this.y = y,
@@ -127,8 +129,7 @@ window.onload = function () {
         }
         groundImageObj.src = grass.imgSrc;
 
-      
-        document.addEventListener('click', function () {
+        $(document).on('click', function () {
             ninja.jump();
         });
     }
@@ -146,6 +147,8 @@ window.onload = function () {
             groundAnimation.stop();
             obstacleAnimation.stop();
             ninjaAnimation.stop();
+
+            playCrashSound();
         }
         ninja.update();
         ninja.img.setY(ninja.y); //refactor
@@ -285,4 +288,34 @@ window.onload = function () {
             this.x -= this.speed;
         }
     }
+}
+
+function playCrashSound() {
+    $('.during-play-audio')[0].pause();
+
+    $('.crash-audio')[0].play();
+    setTimeout(function () {
+        $('.crash-audio')[0].pause();
+    }, 550);
+}
+
+function initializeSound() {
+    //add mouse click sound panel
+    var MouseClickAudio = $('<audio type="audio/mpeg"></audio>').addClass('mouse-click-audio').attr('src', 'sounds/mouse_click.mp3');
+    $('body').append(MouseClickAudio);
+
+    //add crush sound panel
+    var crushAudio = $('<audio type="audio/mpeg"></audio>').addClass('crash-audio').attr('src', 'sounds/crash.mp3');
+    $('body').append(crushAudio);
+
+    //add duringplay panel
+    var duringPlayAudio = $('<audio type="audio/mpeg"></audio>').addClass('during-play-audio').attr('src', 'sounds/during_play.mp3');
+    duringPlayAudio.attr('loop', 'loop');
+    $('body').append(duringPlayAudio);
+
+    $('.during-play-audio')[0].play();
+
+    $(document).on('click', function () {
+        $('.mouse-click-audio')[0].play();
+    })
 }
