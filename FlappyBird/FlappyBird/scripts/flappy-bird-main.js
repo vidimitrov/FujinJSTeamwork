@@ -124,17 +124,26 @@ window.onload = function () {
 
     function update() {
         //obstacle update
-
+       
         ninja.update();
         ninja.img.setY(ninja.y); //refactor
+
     }
 
     function updateObstacles() {
 
         for (var i = 0, len = obstacles.length; i < len; i++) {
-            obstacles[i].update();
-            obstacles[i].img.setX(obstacles[i].x);      //TODO remove obstacles
+            var currentObstacle = obstacles[i];
+            currentObstacle.update();
+            currentObstacle.img.setX(currentObstacle.x);
+
+            if (currentObstacle.x + currentObstacle.width < 0) {
+                obstacles.splice(i, 1);
+                i--;
+                len--;
+            }
         }
+
         frames++;
         if (frames === 100) { //TODO animation frame speed
 
