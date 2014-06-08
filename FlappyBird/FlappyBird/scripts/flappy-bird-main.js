@@ -21,10 +21,10 @@ window.onload = function () {
         Pause: 3,
         GameOver: 4,
     },
-    minPipeHeight,
-    maxPipeHeight,
     gapHeight,
-    frames = 1;
+    frames = 1,
+    totalObstacleHeight,
+    minObstacleHeight = 15;
 
     initalize(stageWidth, stageHeight);
 
@@ -79,27 +79,24 @@ window.onload = function () {
         ninja = new Ninja(75, 150, ninjaImage, 100, 100, playerJumpAcceleration);
         ninjaLayer.add(ninja.img);
         stage.add(ninjaLayer);
+        gapHeight = ninja.img.height() * 1.5;
+        totalObstacleHeight = stage.height() - groundLevel - gapHeight;
 
-        minPipeHeight = stage.height() / 4;
-        maxPipeHeight = stage.height() * 3 / 4;
-        gapHeight = ninja.img.height() * 2;
 
-        //var groundImage = new Image();
-        //groundImage.src = 'imgs/ninja.png';
+        var groundImage = new Image();
+        groundImage.src = 'imgs/ninja.png';
 
-        //var grass = new Ninja(100, 100, ninjaImage, 200, 100, 5);
+        var grassKinetic = new Kinetic.Image({
+            x: 100,
+            y: 100,
+            image: ninjaImage,
+            width: 100,
+            height: 100
+        });
 
-        ////var grassKinetic = new Kinetic.Rect({
-        ////    x: 150,
-        ////    y: 150, 
-        ////    width: 50,
-        ////    height: 50,
-        ////    fill: 'yellowgreen'
-
-        ////});
-
-        //groundLayer.add(grass);
-        //stage.add(groundLayer);
+       
+        groundLayer.add(grassKinetic);
+        stage.add(groundLayer);
         document.addEventListener('click', function () {
             ninja.jump();
         });
@@ -116,40 +113,42 @@ window.onload = function () {
         for (var i = 0, len = obstacles.length; i < len; i++) {
             obstacles[i].update();
             obstacles[i].img.setX(obstacles[i].x);      //TODO remove obstacles
-            //if (obstacles[i].x + obstacles[i].width < 0) {
-            //    obstacles = obstacles.splice(i, 0);
-            //    i--;
-            //    len--;
-            //}
         }
         frames++;
-        console.log(obstacles.length)
         if (frames === 100) { //TODO animation frame speed
 
-
-            var currentObstacles = generateObstacles(maxPipeHeight, minPipeHeight, gapHeight);
+            var currentObstacles = generateObstacles(totalObstacleHeight, gapHeight, minObstacleHeight);
             for (i = 0; i < currentObstacles.length; i++) {
                 obstacles.push(currentObstacles[i]);
             }
             obstaclesLayer.add(currentObstacles[0].img);
             obstaclesLayer.add(currentObstacles[1].img);
-            console.log(obstaclesLayer);
             stage.add(obstaclesLayer);
             frames = 1;
         }
     }
 
 
-    function generateObstacles(maxPipeHeight, minPipeHeight, gapHeight) {
-        var obstacleHeight = Math.max(minPipeHeight, (Math.random() * maxPipeHeight)) | 0, //TODO new formula
+    function generateObstacles(totalObstacleHeight, gapHeight, minObstacleHeight) { // should work properly now
+        var topObstacleHeight,
+            bottomObstacleHeight,
             currentObstacles = [],
             bottomObstacle,
-            topObstacle,
-            bottomObstacleHeight;
+            topObstacle;
 
-        topObstacle = new Obstacle(stage.width(), 0, 100, obstacleHeight);
-        bottomObstacleHeight = stage.height() - topObstacle.height - gapHeight - groundLevel; //TODO formula
-        bottomObstacle = new Obstacle(stage.width(), topObstacle.height + gapHeight, 100, bottomObstacleHeight);
+        topObstacleHeight = (totalObstacleHeight) * Math.random() | 0;
+
+        if (topObstacleHeight < minObstacleHeight) {
+            topObstacleHeight = minObstacleHeight;
+        }
+        else if (topObstacleHeight > topObstacleHeight - minObstacleHeight) {
+            topObstacleHeight = topObstacleHeight - minObstacleHeight;
+        }
+
+        bottomObstacleHeight = totalObstacleHeight - topObstacleHeight;
+
+        topObstacle = new Obstacle(stage.width(), 0, 100, topObstacleHeight);
+        bottomObstacle = new Obstacle(stage.width(), topObstacleHeight + gapHeight, 100, bottomObstacleHeight);
 
         currentObstacles.push(topObstacle);
         currentObstacles.push(bottomObstacle);
@@ -165,7 +164,6 @@ window.onload = function () {
         this.img = new Kinetic.Rect({ //TODO add Image
             x: this.x,
             y: this.y,
-            tension: 3,
             width: this.width,
             height: this.height,
             fill: 'yellowgreen'
