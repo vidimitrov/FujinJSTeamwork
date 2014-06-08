@@ -215,7 +215,7 @@ window.onload = function () {
 
         this.update = function () {
             if (this.x <= (-stageWidth)) {
-                this.x += stageWidth;
+                this.x = -1;
             }
             this.x -= this.speed;
         }
