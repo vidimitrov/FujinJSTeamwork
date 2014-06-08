@@ -4,6 +4,7 @@ window.onload = function () {
     stageWidth = 400,
     stageHeight = 500,
     gameSpeed = 1,
+    ninjaHeight = 100,
     currentState,
     ninja, //ninja 
     obstacles = [], //pipes
@@ -74,6 +75,12 @@ window.onload = function () {
             height: height,
         });
 
+        // defining obsticle sizes
+        gapHeight = ninjaHeight * 2;
+        var clearField = stage.height() - groundLevel;
+        minPipeHeight = (clearField - gapHeight) / 4;
+        maxPipeHeight = (clearField - gapHeight) * 3 / 4;
+
         // Defininf Layers
         ninjaLayer = new Kinetic.Layer();
         obstaclesLayer = new Kinetic.Layer();
@@ -85,7 +92,7 @@ window.onload = function () {
         groundImageObj = new Image();
 
         // initiating Objects
-        ninja = new Ninja(75, 150, ninjaImage, 100, 100, playerJumpAcceleration);
+        ninja = new Ninja(75, 150, ninjaImage, 100, ninjaHeight, playerJumpAcceleration);
         grass = new Grass(0, stageHeight - (groundLevel * 1.5) , 'imgs/grass.png', stageWidth * 2, groundLevel * 1.5, gameSpeed)
 
         // Drawing Layers
@@ -106,11 +113,6 @@ window.onload = function () {
         groundImageObj.src = grass.imgSrc;
 
         ////// end of drawing layers
-
-        minPipeHeight = stage.height() / 4;
-        maxPipeHeight = stage.height() * 3 / 4;
-        gapHeight = ninja.img.height() * 2;
-
         
 
         document.addEventListener('click', function () {
