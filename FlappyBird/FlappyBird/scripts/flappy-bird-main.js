@@ -29,7 +29,10 @@ window.onload = function () {
     gapHeight,
     frames = 1,
     totalObstacleHeight,
-    minObstacleHeight = 15;
+    minObstacleHeight = 15,
+    ninjaAnimation,
+    obstacleAnimation,
+    groundAnimation;
 
     initalize(stageWidth, stageHeight);
 
@@ -37,13 +40,14 @@ window.onload = function () {
         this.x = x,
         this.y = y,
         this.jumpSize = jumpAcceleration,
-        this.rotationAngle = 60,
+        this.rotationAngle = 0,
         this.img = new Kinetic.Image({
             x: this.x,
             y: this.y,
             image: img,
             width: width,
-            height: height
+            height: height,
+            fill:'pink'
         }).rotateDeg(this.rotationAngle);
 
         this.jump = function () {
@@ -60,13 +64,13 @@ window.onload = function () {
         }
     }
 
-    var ninjaAnimation = new Kinetic.Animation(update, ninjaLayer); //set time
+    ninjaAnimation = new Kinetic.Animation(update, ninjaLayer); //set time
     ninjaAnimation.start();
 
-    var obstacleAnimation = new Kinetic.Animation(updateObstacles, obstaclesLayer);
+    obstacleAnimation = new Kinetic.Animation(updateObstacles, obstaclesLayer);
     obstacleAnimation.start();
 
-    var groundAnimation = new Kinetic.Animation(groundUpdate, groundLayer);
+    groundAnimation = new Kinetic.Animation(groundUpdate, groundLayer);
     groundAnimation.start();
 
     function initalize(width, height) {
@@ -125,8 +129,13 @@ window.onload = function () {
     }
 
     function update() {
-        //obstacle update
-       
+        if (hasCrashed(ninja)) {   // Refactor
+            console.log('crashed');
+
+            groundAnimation.stop();
+            obstacleAnimation.stop();
+            ninjaAnimation.stop();
+        }
         ninja.update();
         ninja.img.setY(ninja.y); //refactor
 
@@ -185,6 +194,25 @@ window.onload = function () {
         }
     }
 
+    function hasCrashed(ninja) {
+        if (ninja.y + ninja.img.height() >= stageHeight - groundLevel) {
+            return true;
+        }
+
+        for (var i = 0; i < obstacles.length; i++) {
+
+            var currentObstacle = obstacles[i];
+            // console.log('ninja x: ' + ninja.x + ' y: ' + ninja.y + ' width: ' + ninja.img.width() + ' height: ' + ninja.img.height());
+
+            if (ninja.x >= currentObstacle.x && ninja.x <= currentObstacle.x + currentObstacle.width || ninja.x + ninja.img.width() >= currentObstacle.x && ninja.x + ninja.img.width() <= currentObstacle.x + currentObstacle.width) {
+
+                if (ninja.y >= currentObstacle.y && ninja.y <= currentObstacle.y + currentObstacle.height || ninja.y + ninja.img.height() >= currentObstacle.y && ninja.y + ninja.img.height() <= currentObstacle.y + currentObstacle.height) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     function generateObstacles(totalObstacleHeight, gapHeight, minObstacleHeight) { // should work properly now
         var topObstacleHeight,
