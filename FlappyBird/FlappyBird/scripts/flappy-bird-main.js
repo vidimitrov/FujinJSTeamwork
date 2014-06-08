@@ -93,7 +93,7 @@ window.onload = function () {
 
         // initiating Objects
         ninja = new Ninja(75, 150, ninjaImage, 100, ninjaHeight, playerJumpAcceleration);
-        grass = new Grass(0, stageHeight - (groundLevel * 1.5) , 'imgs/grass.png', stageWidth * 2, groundLevel * 1.5, gameSpeed)
+        grass = new Grass(0, stageHeight - (groundLevel * 1.5) , 'imgs/grass.png', stageWidth * 2, groundLevel * 1.5, gameSpeed * 5)
 
         // Drawing Layers
         ninjaLayer.add(ninja.img);
@@ -158,6 +158,7 @@ window.onload = function () {
             obstaclesLayer.add(currentObstacles[1].img);
             console.log(obstaclesLayer);
             stage.add(obstaclesLayer);
+            obstaclesLayer.moveToBottom();
             frames = 1;
         }
     }
@@ -194,7 +195,7 @@ window.onload = function () {
             fill: 'yellowgreen'
         });
         this.update = function () {
-            this.x -= 5;
+            this.x -= gameSpeed * 5;
         }
     }
 
@@ -208,12 +209,10 @@ window.onload = function () {
 
 
         this.update = function () {
-            if (this.x > (-stageWidth)) {
-                this.x -= this.speed;
+            if (this.x <= (-stageWidth)) {
+                this.x += stageWidth;
             }
-            else {
-                this.x = 0;
-            }
+            this.x -= this.speed;
         }
     }
 }
