@@ -5,7 +5,10 @@ window.onload = function () {
     stageWidth = 400,
     stageHeight = 500,
     gameSpeed = 1,
-    ninjaHeight = 100,
+    ninjaStartPosX = 25,
+    ninjaStartPosY = 150,
+    ninjaHeight = 85,
+    ninjaWidth = 85,
     currentState,
     ninja, //ninja 
     obstacles = [], //pipes
@@ -49,7 +52,7 @@ window.onload = function () {
             image: img,
             width: width,
             height: height,
-            fill:'pink'
+            fill: 'pink'
         }).rotateDeg(this.rotationAngle);
 
         this.jump = function () {
@@ -72,7 +75,7 @@ window.onload = function () {
 
             if (this.y + this.img.height() + groundLevel < stage.height()) {
                 this.y += gravity;
-                gravity+=0.1;
+                gravity += 0.1;
             }
         }
     }
@@ -95,7 +98,7 @@ window.onload = function () {
         });
 
         // defining obsticle sizes
-        gapHeight = ninjaHeight * 1.5;
+        gapHeight = ninjaHeight * 2;
         totalObstacleHeight = stage.height() - groundLevel - gapHeight;
 
         // Defininf Layers
@@ -108,9 +111,9 @@ window.onload = function () {
         //ninjaImage.src = 'imgs/ninja.png';
         groundImageObj = new Image();
 
-        // initiating Objects
-        ninja = new Ninja(75, 150, ninjaImage, 100, ninjaHeight, playerJumpAcceleration);
-        grass = new Grass(0, stageHeight - (groundLevel * 2.2) , 'imgs/grass.png', stageWidth * 2, groundLevel * 2.2, gameSpeed * 5)
+        // initiating Objects       
+        ninja = new Ninja(ninjaStartPosX, ninjaStartPosY, ninjaImage, ninjaWidth, ninjaHeight, playerJumpAcceleration);
+        grass = new Grass(0, stageHeight - (groundLevel * 2.2), 'imgs/grass.png', stageWidth * 2, groundLevel * 2.2, gameSpeed * 5)
 
         // Drawing Layers
         ninjaLayer.add(ninja.img);
@@ -154,29 +157,29 @@ window.onload = function () {
         ninja.img.setY(ninja.y); //refactor
 
         //Attempt to animate ninja!!!
-        ninjaPosition+=0.5;
+        ninjaPosition += 0.5;
         switch (ninjaPosition) {
             //case 1:
             //case 2: 
             case 3: ninjaImage.src = 'imgs/ninja1.png'; break;
-            //case 4:
-            //case 5: 
+                //case 4:
+                //case 5: 
             case 6: ninjaImage.src = 'imgs/ninja2.png'; break;
-            //case 7:
-            //case 8:
+                //case 7:
+                //case 8:
             case 9: ninjaImage.src = 'imgs/ninja3.png'; break;
-            //case 10:
-            //case 11:
+                //case 10:
+                //case 11:
             case 12: ninjaImage.src = 'imgs/ninja4.png'; break;
-            //case 13:
-            //case 14:
+                //case 13:
+                //case 14:
             case 16: ninjaImage.src = 'imgs/ninja5.png'; break;
-            //case 16:
-            //case 17:
+                //case 16:
+                //case 17:
             case 18: ninjaImage.src = 'imgs/ninja6.png'; break;
-            default: if(ninjaPosition > 18) ninjaPosition = 0 ; break;
+            default: if (ninjaPosition > 18) ninjaPosition = 0; break;
         }
-        
+
     }
 
     function updateObstacles() {

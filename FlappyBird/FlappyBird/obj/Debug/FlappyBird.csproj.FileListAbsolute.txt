@@ -10,3 +10,8 @@ C:\Users\Rusekov\Documents\GitHub\FujinJSTeamwork\FlappyBird\FlappyBird\bin\Flap
 C:\Users\Rusekov\Documents\GitHub\FujinJSTeamwork\FlappyBird\FlappyBird\obj\Debug\FlappyBird.csprojResolveAssemblyReference.cache
 C:\Users\Rusekov\Documents\GitHub\FujinJSTeamwork\FlappyBird\FlappyBird\obj\Debug\FlappyBird.dll
 C:\Users\Rusekov\Documents\GitHub\FujinJSTeamwork\FlappyBird\FlappyBird\obj\Debug\FlappyBird.pdb
+D:\Documents\TELERIK ACADEMY\My GitHub Repositories\FujinJSTeamwork\FlappyBird\FlappyBird\bin\FlappyBird.dll
+D:\Documents\TELERIK ACADEMY\My GitHub Repositories\FujinJSTeamwork\FlappyBird\FlappyBird\bin\FlappyBird.pdb
+D:\Documents\TELERIK ACADEMY\My GitHub Repositories\FujinJSTeamwork\FlappyBird\FlappyBird\obj\Debug\FlappyBird.csprojResolveAssemblyReference.cache
+D:\Documents\TELERIK ACADEMY\My GitHub Repositories\FujinJSTeamwork\FlappyBird\FlappyBird\obj\Debug\FlappyBird.dll
+D:\Documents\TELERIK ACADEMY\My GitHub Repositories\FujinJSTeamwork\FlappyBird\FlappyBird\obj\Debug\FlappyBird.pdb
