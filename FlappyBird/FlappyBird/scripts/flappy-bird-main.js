@@ -1,4 +1,5 @@
-﻿/// <reference path="kinetic-v5.1.0.min.js" />
+﻿/// <reference path="jquery.js" />
+/// <reference path="kinetic-v5.1.0.min.js" />
 window.onload = function () {
     var stage,
     ninjaPosition = 0,
@@ -20,7 +21,7 @@ window.onload = function () {
     ninjaLayer,
     obstaclesLayer,
     currentScore = 0,
-    highScore,
+    highScores = [],
     gravity = 0,
     playerJumpAcceleration = 5,
     gameStates = {
@@ -40,6 +41,7 @@ window.onload = function () {
 
 
     function startGame() {
+        loadScores();
         currentState = gameStates.InGame;
 
         ninjaHeight = ninjaWidth = (stageHeight / 8);
@@ -134,7 +136,7 @@ window.onload = function () {
                 len--;
             }
 
-            //scores when the rightmost part of the ninja reaches the middle of the obstacles
+            //scores when the rightmost part of the ninja reaches the middle of the obstacle
             if (i % 2 === 0 && (currentObstacle.x + currentObstacle.width / 2) - (gameSpeed / 2) <= ninja.x + ninja.width && (currentObstacle.x + currentObstacle.width / 2) + (gameSpeed / 2) >= ninja.x + ninja.width) {
                 currentScore++;
                 console.log('score: ' + currentScore);
@@ -143,7 +145,7 @@ window.onload = function () {
         }
 
         frames++;
-        if (frames === 300) { //TODO animation frame speed // magic number here!!!
+        if (frames === gameSpeed * 30) { //TODO animation frame speed // magic number here!!!
 
             var currentObstacles = generateObstacles(totalObstacleHeight, gapHeight, minObstacleHeight);
             for (i = 0; i < currentObstacles.length; i++) {
@@ -155,6 +157,24 @@ window.onload = function () {
             obstaclesLayer.moveToBottom();
             frames = 1;
         }
+    }
+
+    function loadScores() {
+        $.ajax({
+            type: "GET",
+            url: "scores.xml",
+            dataType: "xml",
+            success: parseScoresFile
+        });
+    }
+
+    function parseScoresFile(xml) {
+        $(xml).find('score').each(function () {
+            highScores.push({
+                player: $(this).find('player').text().trim(),
+                points: $(this).find('points').text().trim()
+            })
+        })
     }
 
     function hasCrashed(ninja) {
