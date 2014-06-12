@@ -4,7 +4,7 @@ window.onload = function () {
     ninjaPosition = 0,
     stageWidth = 400,
     stageHeight = 500,
-    gameSpeed = 1,
+    gameSpeed = 3,
     ninjaStartPosX = 25,
     ninjaStartPosY = 150,
     ninjaHeight,
@@ -19,7 +19,7 @@ window.onload = function () {
     groundImageObj,
     ninjaLayer,
     obstaclesLayer,
-    currentScore,
+    currentScore = 0,
     highScore,
     gravity = 0,
     playerJumpAcceleration = 5,
@@ -71,7 +71,7 @@ window.onload = function () {
         updateGround();
         updateNinja();
 
-        if (hasCrashed(ninja) && currentState === gameStates.InGame) { 
+        if (hasCrashed(ninja) && currentState === gameStates.InGame) {
             currentState = gameStates.GameOver;
             animation.stop();
             playCrashSound();
@@ -133,6 +133,13 @@ window.onload = function () {
                 i--;
                 len--;
             }
+
+            //scores when the rightmost part of the ninja reaches the middle of the obstacles
+            if (i % 2 === 0 && (currentObstacle.x + currentObstacle.width / 2) - (gameSpeed / 2) <= ninja.x + ninja.width && (currentObstacle.x + currentObstacle.width / 2) + (gameSpeed / 2) >= ninja.x + ninja.width) {
+                currentScore++;
+                console.log('score: ' + currentScore);
+            }
+
         }
 
         frames++;
@@ -234,7 +241,7 @@ window.onload = function () {
 
         // initiating Objects       
         ninja = new Ninja(ninjaStartPosX, ninjaStartPosY, ninjaImage, ninjaWidth, ninjaHeight, playerJumpAcceleration);
-        grass = new Grass(0, stageHeight - (groundLevel * 2.2), 'imgs/grass.png', stageWidth * 2, groundLevel * 2.2, gameSpeed * 5)
+        grass = new Grass(0, stageHeight - (groundLevel * 2.2), 'imgs/grass.png', stageWidth * 2, groundLevel * 2.2, gameSpeed)
 
         // Drawing Layers
         ninjaLayer.add(ninja.img);
@@ -260,7 +267,6 @@ window.onload = function () {
         this.width = width,
         this.height = height,
         this.jumpSize = jumpAcceleration,
-        this.rotationAngle = 0,
         this.img = new Kinetic.Image({
             x: this.x,
             y: this.y,
@@ -268,7 +274,7 @@ window.onload = function () {
             width: width,
             height: height,
             // fill: 'pink'
-        }).rotateDeg(this.rotationAngle);
+        });
 
         this.jump = function () {
             if (gravity > 0) {
@@ -294,6 +300,7 @@ window.onload = function () {
         }
     }
 
+
     function Obstacle(x, y, width, height) {
         this.x = x;
         this.y = y;
@@ -307,7 +314,7 @@ window.onload = function () {
             fill: 'yellowgreen'
         });
         this.update = function () {
-            this.x -= gameSpeed * 3; // magic number here
+            this.x -= gameSpeed; // magic number here
         }
     }
 
