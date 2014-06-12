@@ -7,8 +7,8 @@ window.onload = function () {
     gameSpeed = 1,
     ninjaStartPosX = 25,
     ninjaStartPosY = 150,
-    ninjaHeight = 85,
-    ninjaWidth = 85,
+    ninjaHeight,
+    ninjaWidth,
     currentState,
     ninja, //ninja 
     obstacles = [], //pipes
@@ -41,6 +41,9 @@ window.onload = function () {
 
     function startGame() {
         currentState = gameStates.InGame;
+
+        ninjaHeight = ninjaWidth = (stageHeight / 8);
+
         initializeKineticObjects();
         initializeSound();
         animation = new Kinetic.Animation(update, stage); //set time
@@ -185,8 +188,8 @@ window.onload = function () {
 
         bottomObstacleHeight = totalObstacleHeight - topObstacleHeight;
 
-        topObstacle = new Obstacle(stage.width(), 0, 100, topObstacleHeight);
-        bottomObstacle = new Obstacle(stage.width(), topObstacleHeight + gapHeight, 100, bottomObstacleHeight);
+        topObstacle = new Obstacle(stage.width(), 0, 70, topObstacleHeight);
+        bottomObstacle = new Obstacle(stage.width(), topObstacleHeight + gapHeight, 70, bottomObstacleHeight);
 
         currentObstacles.push(topObstacle);
         currentObstacles.push(bottomObstacle);
@@ -216,7 +219,7 @@ window.onload = function () {
         });
 
         // defining obsticle sizes
-        gapHeight = ninjaHeight * 2;
+        gapHeight = ninjaHeight * 3;
         totalObstacleHeight = stage.height() - groundLevel - gapHeight;
 
         // Defininf Layers
@@ -264,7 +267,7 @@ window.onload = function () {
             image: img,
             width: width,
             height: height,
-            fill: 'pink'
+            // fill: 'pink'
         }).rotateDeg(this.rotationAngle);
 
         this.jump = function () {
