@@ -36,68 +36,29 @@ window.onload = function () {
     animation;
 
 
-
-    initalize(stageWidth, stageHeight);
-    initializeSound();
-    animation = new Kinetic.Animation(update, stage); //set time
-    animation.start();
+    startGame();
 
 
-
-    function initalize(width, height) {
+    function startGame() {
         currentState = gameStates.InGame;
-        // Defining Stage
-        stage = new Kinetic.Stage({
-            container: 'container',
-            width: width,
-            height: height,
-        });
+        initializeKineticObjects();
+        initializeSound();
+        animation = new Kinetic.Animation(update, stage); //set time
+        animation.start();
 
-        // defining obsticle sizes
-        gapHeight = ninjaHeight * 2;
-        totalObstacleHeight = stage.height() - groundLevel - gapHeight;
-
-        // Defininf Layers
-        ninjaLayer = new Kinetic.Layer();
-        obstaclesLayer = new Kinetic.Layer();
-        groundLayer = new Kinetic.Layer();
-
-        // Defining Images
-        ninjaImage = new Image();
-        //ninjaImage.src = 'imgs/ninja.png';
-        groundImageObj = new Image();
-
-        // initiating Objects       
-        ninja = new Ninja(ninjaStartPosX, ninjaStartPosY, ninjaImage, ninjaWidth, ninjaHeight, playerJumpAcceleration);
-        grass = new Grass(0, stageHeight - (groundLevel * 2.2), 'imgs/grass.png', stageWidth * 2, groundLevel * 2.2, gameSpeed * 5)
-
-        // Drawing Layers
-        ninjaLayer.add(ninja.img);
-        stage.add(ninjaLayer);
-
-        groundImageObj.onload = function () {
-            var grassImg = new Kinetic.Image({
-                image: groundImageObj,
-                x: grass.x,
-                y: grass.y,
-                width: grass.width,
-                height: grass.height
-            });
-            groundLayer.add(grassImg);
-            stage.add(groundLayer);
-        }
-        groundImageObj.src = grass.imgSrc;
-
-        //events
+        //attach events
         $(document).on('click', function () {
-            ninja.jump();
+            if (currentState === gameStates.InGame) {
+                ninja.jump();
+            }
         });
-        //pause func 
-        $(document).on('keydown', function (ev) { 
+        //pause event 
+        $(document).on('keydown', function (ev) {
             if (ev.keyCode === 80) {
                 togglePause();
             }
         });
+
 
     }
     //single update function
@@ -107,7 +68,7 @@ window.onload = function () {
         updateGround();
         updateNinja();
 
-        if (hasCrashed(ninja) && currentState === gameStates.InGame) {   // Refactor
+        if (hasCrashed(ninja) && currentState === gameStates.InGame) { 
             currentState = gameStates.GameOver;
             animation.stop();
             playCrashSound();
@@ -153,7 +114,6 @@ window.onload = function () {
     }
 
     function updateGround() {
-        //ground update
         grass.update();
         groundLayer.setX(grass.x);
     }
@@ -247,6 +207,50 @@ window.onload = function () {
         }
     }
 
+    function initializeKineticObjects() {
+        // Defining Stage
+        stage = new Kinetic.Stage({
+            container: 'container',
+            width: stageWidth,
+            height: stageHeight,
+        });
+
+        // defining obsticle sizes
+        gapHeight = ninjaHeight * 2;
+        totalObstacleHeight = stage.height() - groundLevel - gapHeight;
+
+        // Defininf Layers
+        ninjaLayer = new Kinetic.Layer();
+        obstaclesLayer = new Kinetic.Layer();
+        groundLayer = new Kinetic.Layer();
+
+        // Defining Images
+        ninjaImage = new Image();
+        //ninjaImage.src = 'imgs/ninja.png';
+        groundImageObj = new Image();
+
+        // initiating Objects       
+        ninja = new Ninja(ninjaStartPosX, ninjaStartPosY, ninjaImage, ninjaWidth, ninjaHeight, playerJumpAcceleration);
+        grass = new Grass(0, stageHeight - (groundLevel * 2.2), 'imgs/grass.png', stageWidth * 2, groundLevel * 2.2, gameSpeed * 5)
+
+        // Drawing Layers
+        ninjaLayer.add(ninja.img);
+        stage.add(ninjaLayer);
+
+        groundImageObj.onload = function () {
+            var grassImg = new Kinetic.Image({
+                image: groundImageObj,
+                x: grass.x,
+                y: grass.y,
+                width: grass.width,
+                height: grass.height
+            });
+            groundLayer.add(grassImg);
+            stage.add(groundLayer);
+        }
+        groundImageObj.src = grass.imgSrc;
+    }
+
     function Ninja(x, y, img, width, height, jumpAcceleration) {
         this.x = x,
         this.y = y,
@@ -280,7 +284,7 @@ window.onload = function () {
         }
         this.update = function () {
 
-            if (this.y + this.img.height() + groundLevel < stage.height()) {
+            if (this.y + this.height + groundLevel < stage.height()) {
                 this.y += gravity;
                 gravity += 0.1;
             }
