@@ -33,63 +33,19 @@ window.onload = function () {
     frames = 1,
     totalObstacleHeight,
     minObstacleHeight = 15,
-    ninjaAnimation,
-    obstacleAnimation,
-    groundAnimation;
+    animation;
+
+
 
     initalize(stageWidth, stageHeight);
-
     initializeSound();
-
-    function Ninja(x, y, img, width, height, jumpAcceleration) {
-        this.x = x,
-        this.y = y,
-        this.jumpSize = jumpAcceleration,
-        this.rotationAngle = 0,
-        this.img = new Kinetic.Image({
-            x: this.x,
-            y: this.y,
-            image: img,
-            width: width,
-            height: height,
-            fill: 'pink'
-        }).rotateDeg(this.rotationAngle);
-
-        this.jump = function () {
-            if (gravity > 0) {
-                console.log(gravity);
-                gravity -= this.jumpSize;
-
-            }
-            else {
-                gravity = -this.jumpSize;
-                console.log('gravity minimum')
-            }
+    animation = new Kinetic.Animation(update, stage); //set time
+    animation.start();
 
 
-            if (this.y < 0) {
-                this.y = 0;
-            }
-        }
-        this.update = function () {
-
-            if (this.y + this.img.height() + groundLevel < stage.height()) {
-                this.y += gravity;
-                gravity += 0.1;
-            }
-        }
-    }
-
-    ninjaAnimation = new Kinetic.Animation(update, ninjaLayer); //set time
-    ninjaAnimation.start();
-
-    obstacleAnimation = new Kinetic.Animation(updateObstacles, obstaclesLayer);
-    obstacleAnimation.start();
-
-    groundAnimation = new Kinetic.Animation(groundUpdate, groundLayer);
-    groundAnimation.start();
 
     function initalize(width, height) {
+        currentState = gameStates.InGame;
         // Defining Stage
         stage = new Kinetic.Stage({
             container: 'container',
@@ -132,27 +88,42 @@ window.onload = function () {
         }
         groundImageObj.src = grass.imgSrc;
 
+        //events
         $(document).on('click', function () {
             ninja.jump();
         });
-    }
+        //pause func 
+        $(document).on('keydown', function (ev) { 
+            if (ev.keyCode === 80) {
+                togglePause();
+            }
+        });
 
-    function groundUpdate() {
-        //ground update
-        grass.update();
-        groundLayer.setX(grass.x);
     }
-
+    //single update function
     function update() {
-        if (hasCrashed(ninja)) {   // Refactor
-            console.log('crashed');
 
-            groundAnimation.stop();
-            obstacleAnimation.stop();
-            ninjaAnimation.stop();
+        updateObstacles();
+        updateGround();
+        updateNinja();
 
+        if (hasCrashed(ninja) && currentState === gameStates.InGame) {   // Refactor
+            currentState = gameStates.GameOver;
+            animation.stop();
             playCrashSound();
         }
+
+        if (currentState === gameStates.GameOver) {
+            //implement functionality
+
+        }
+        if (currentState === gameStates.HighScores) {
+            //implement functionality
+        }
+
+    }
+
+    function updateNinja() {
         ninja.update();
         ninja.img.setY(ninja.y); //refactor
 
@@ -179,7 +150,12 @@ window.onload = function () {
             case 18: ninjaImage.src = 'imgs/ninja6.png'; break;
             default: if (ninjaPosition > 18) ninjaPosition = 0; break;
         }
+    }
 
+    function updateGround() {
+        //ground update
+        grass.update();
+        groundLayer.setX(grass.x);
     }
 
     function updateObstacles() {
@@ -212,18 +188,18 @@ window.onload = function () {
     }
 
     function hasCrashed(ninja) {
-        if (ninja.y + ninja.img.height() >= stageHeight - groundLevel) {
+        if (ninja.y + ninja.height >= stageHeight - groundLevel) {
             return true;
         }
 
         for (var i = 0; i < obstacles.length; i++) {
 
             var currentObstacle = obstacles[i];
-            // console.log('ninja x: ' + ninja.x + ' y: ' + ninja.y + ' width: ' + ninja.img.width() + ' height: ' + ninja.img.height());
+            // console.log('ninja x: ' + ninja.x + ' y: ' + ninja.y + ' width: ' + ninja.width + ' height: ' + ninja.height);
 
-            if (ninja.x >= currentObstacle.x && ninja.x <= currentObstacle.x + currentObstacle.width || ninja.x + ninja.img.width() >= currentObstacle.x && ninja.x + ninja.img.width() <= currentObstacle.x + currentObstacle.width) {
+            if (ninja.x >= currentObstacle.x && ninja.x <= currentObstacle.x + currentObstacle.width || ninja.x + ninja.width >= currentObstacle.x && ninja.x + ninja.width <= currentObstacle.x + currentObstacle.width) {
 
-                if (ninja.y >= currentObstacle.y && ninja.y <= currentObstacle.y + currentObstacle.height || ninja.y + ninja.img.height() >= currentObstacle.y && ninja.y + ninja.img.height() <= currentObstacle.y + currentObstacle.height) {
+                if (ninja.y >= currentObstacle.y && ninja.y <= currentObstacle.y + currentObstacle.height || ninja.y + ninja.height >= currentObstacle.y && ninja.y + ninja.height <= currentObstacle.y + currentObstacle.height) {
                     return true;
                 }
             }
@@ -256,6 +232,59 @@ window.onload = function () {
         currentObstacles.push(bottomObstacle);
 
         return currentObstacles;
+    }
+
+    function togglePause() {
+        if (currentState === gameStates.InGame) {
+            currentState = gameStates.Pause;
+            animation.stop();
+            $('.during-play-audio')[0].pause();
+        }
+        else if (currentState === gameStates.Pause) {
+            currentState = gameStates.InGame;
+            animation.start();
+            $('.during-play-audio')[0].play();
+        }
+    }
+
+    function Ninja(x, y, img, width, height, jumpAcceleration) {
+        this.x = x,
+        this.y = y,
+        this.width = width,
+        this.height = height,
+        this.jumpSize = jumpAcceleration,
+        this.rotationAngle = 0,
+        this.img = new Kinetic.Image({
+            x: this.x,
+            y: this.y,
+            image: img,
+            width: width,
+            height: height,
+            fill: 'pink'
+        }).rotateDeg(this.rotationAngle);
+
+        this.jump = function () {
+            if (gravity > 0) {
+                console.log(gravity);
+                gravity -= this.jumpSize;
+            }
+            else {
+                gravity = -this.jumpSize;
+                console.log('gravity minimum')
+            }
+
+
+            if (this.y < 0) {
+                this.y = 0;
+            }
+        }
+        this.update = function () {
+
+            if (this.y + this.img.height() + groundLevel < stage.height()) {
+                this.y += gravity;
+                gravity += 0.1;
+            }
+        }
     }
 
     function Obstacle(x, y, width, height) {
@@ -291,34 +320,37 @@ window.onload = function () {
             this.x -= this.speed;
         }
     }
-}
 
-function playCrashSound() {
-    $('.during-play-audio')[0].pause();
 
-    $('.crash-audio')[0].play();
-    setTimeout(function () {
-        $('.crash-audio')[0].pause();
-    }, 550);
-}
+    function playCrashSound() {
+        $('.during-play-audio')[0].pause();
 
-function initializeSound() {
-    //add mouse click sound panel
-    var MouseClickAudio = $('<audio type="audio/mpeg"></audio>').addClass('mouse-click-audio').attr('src', 'sounds/mouse_click.mp3');
-    $('body').append(MouseClickAudio);
+        $('.crash-audio')[0].play();
+        setTimeout(function () {
+            $('.crash-audio')[0].pause();
+        }, 550);
+    }
 
-    //add crush sound panel
-    var crushAudio = $('<audio type="audio/mpeg"></audio>').addClass('crash-audio').attr('src', 'sounds/crash.mp3');
-    $('body').append(crushAudio);
+    function initializeSound() {
+        //add mouse click sound panel
+        var MouseClickAudio = $('<audio type="audio/mpeg"></audio>').addClass('mouse-click-audio').attr('src', 'sounds/mouse_click.mp3');
+        $('body').append(MouseClickAudio);
 
-    //add duringplay panel
-    var duringPlayAudio = $('<audio type="audio/mpeg"></audio>').addClass('during-play-audio').attr('src', 'sounds/during_play.mp3');
-    duringPlayAudio.attr('loop', 'loop');
-    $('body').append(duringPlayAudio);
+        //add crush sound panel
+        var crushAudio = $('<audio type="audio/mpeg"></audio>').addClass('crash-audio').attr('src', 'sounds/crash.mp3');
+        $('body').append(crushAudio);
 
-    $('.during-play-audio')[0].play();
+        //add duringplay panel
+        var duringPlayAudio = $('<audio type="audio/mpeg"></audio>').addClass('during-play-audio').attr('src', 'sounds/during_play.mp3');
+        duringPlayAudio.attr('loop', 'loop');
+        $('body').append(duringPlayAudio);
 
-    $(document).on('click', function () {
-        $('.mouse-click-audio')[0].play();
-    })
+        $('.during-play-audio')[0].play();
+
+        $(document).on('click', function () {
+            if (currentState === gameStates.InGame) {
+                $('.mouse-click-audio')[0].play();
+            }
+        })
+    }
 }
