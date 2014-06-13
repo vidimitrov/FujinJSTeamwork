@@ -1,10 +1,11 @@
-﻿/// <reference path="kinetic-v5.1.0.min.js" />
+﻿/// <reference path="jquery.js" />
+/// <reference path="kinetic-v5.1.0.min.js" />
 window.onload = function () {
     var stage,
     ninjaPosition = 0,
     stageWidth = 400,
     stageHeight = 500,
-    gameSpeed = 1,
+    gameSpeed = 3,
     ninjaStartPosX = 25,
     ninjaStartPosY = 150,
     ninjaHeight,
@@ -19,8 +20,8 @@ window.onload = function () {
     groundImageObj,
     ninjaLayer,
     obstaclesLayer,
-    currentScore,
-    highScore,
+    currentScore = 0,
+    highScores = [],
     gravity = 0,
     playerJumpAcceleration = 5,
     gameStates = {
@@ -40,6 +41,7 @@ window.onload = function () {
 
 
     function startGame() {
+        loadScores();
         currentState = gameStates.InGame;
 
         ninjaHeight = ninjaWidth = (stageHeight / 8);
@@ -133,10 +135,17 @@ window.onload = function () {
                 i--;
                 len--;
             }
+
+            //scores when the rightmost part of the ninja reaches the middle of the obstacle
+            if (i % 2 === 0 && (currentObstacle.x + currentObstacle.width / 2) - (gameSpeed / 2) <= ninja.x + ninja.width && (currentObstacle.x + currentObstacle.width / 2) + (gameSpeed / 2) >= ninja.x + ninja.width) {
+                currentScore++;
+                console.log('score: ' + currentScore);
+            }
+
         }
 
         frames++;
-        if (frames === 100) { //TODO animation frame speed // magic number here!!!
+        if (frames === gameSpeed * 30) { //TODO animation frame speed // magic number here!!!
 
             var currentObstacles = generateObstacles(totalObstacleHeight, gapHeight, minObstacleHeight);
             for (i = 0; i < currentObstacles.length; i++) {
@@ -148,6 +157,24 @@ window.onload = function () {
             obstaclesLayer.moveToBottom();
             frames = 1;
         }
+    }
+
+    function loadScores() {
+        $.ajax({
+            type: "GET",
+            url: "scores.xml",
+            dataType: "xml",
+            success: parseScoresFile
+        });
+    }
+
+    function parseScoresFile(xml) {
+        $(xml).find('score').each(function () {
+            highScores.push({
+                player: $(this).find('player').text().trim(),
+                points: $(this).find('points').text().trim()
+            })
+        })
     }
 
     function hasCrashed(ninja) {
@@ -239,7 +266,7 @@ window.onload = function () {
 
         // initiating Objects       
         ninja = new Ninja(ninjaStartPosX, ninjaStartPosY, ninjaImage, ninjaWidth, ninjaHeight, playerJumpAcceleration);
-        grass = new Grass(0, stageHeight - (groundLevel * 2.2), 'imgs/grass.png', stageWidth * 2, groundLevel * 2.2, gameSpeed * 5)
+        grass = new Grass(0, stageHeight - (groundLevel * 2.2), 'imgs/grass.png', stageWidth * 2, groundLevel * 2.2, gameSpeed)
 
         // Drawing Layers
         ninjaLayer.add(ninja.img);
@@ -276,7 +303,7 @@ window.onload = function () {
         }).rotateDeg(this.rotationAngle);
 
         this.jump = function () {
-            gravity = -this.jumpSize;           
+                gravity = -this.jumpSize;
         }
         this.update = function () {
 
@@ -289,6 +316,7 @@ window.onload = function () {
             }
         }
     }
+
 
     function Obstacle(x, y, width, height) {
         this.x = x;
@@ -303,7 +331,7 @@ window.onload = function () {
             fill: 'yellowgreen'
         });
         this.update = function () {
-            this.x -= gameSpeed * 3; // magic number here
+            this.x -= gameSpeed; // magic number here
         }
     }
 
