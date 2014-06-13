@@ -136,7 +136,7 @@ window.onload = function () {
         }
 
         frames++;
-        if (frames === 300) { //TODO animation frame speed // magic number here!!!
+        if (frames === 100) { //TODO animation frame speed // magic number here!!!
 
             var currentObstacles = generateObstacles(totalObstacleHeight, gapHeight, minObstacleHeight);
             for (i = 0; i < currentObstacles.length; i++) {
@@ -159,10 +159,15 @@ window.onload = function () {
 
             var currentObstacle = obstacles[i];
             // console.log('ninja x: ' + ninja.x + ' y: ' + ninja.y + ' width: ' + ninja.width + ' height: ' + ninja.height);
+            var ninjaLeftPoint = ninja.x,
+                ninjaRightPoint = ninja.x + (ninja.width * 0.6),
+                ninjaTopPoint = ninja.y + (ninja.y * 0.2),
+                ninjaBottom = ninja.y + ninja.height;
 
-            if (ninja.x >= currentObstacle.x && ninja.x <= currentObstacle.x + currentObstacle.width || ninja.x + ninja.width >= currentObstacle.x && ninja.x + ninja.width <= currentObstacle.x + currentObstacle.width) {
 
-                if (ninja.y >= currentObstacle.y && ninja.y <= currentObstacle.y + currentObstacle.height || ninja.y + ninja.height >= currentObstacle.y && ninja.y + ninja.height <= currentObstacle.y + currentObstacle.height) {
+            if (ninjaLeftPoint >= currentObstacle.x && ninjaLeftPoint <= currentObstacle.x + currentObstacle.width || ninjaRightPoint >= currentObstacle.x && ninjaRightPoint <= currentObstacle.x + currentObstacle.width) {
+
+                if (ninjaTopPoint >= currentObstacle.y && ninjaTopPoint <= currentObstacle.y + currentObstacle.height || ninjaBottom >= currentObstacle.y && ninjaBottom <= currentObstacle.y + currentObstacle.height) {
                     return true;
                 }
             }
@@ -260,7 +265,7 @@ window.onload = function () {
         this.width = width,
         this.height = height,
         this.jumpSize = jumpAcceleration,
-        this.rotationAngle = 0,
+        this.rotationAngle = 30,
         this.img = new Kinetic.Image({
             x: this.x,
             y: this.y,
@@ -271,25 +276,16 @@ window.onload = function () {
         }).rotateDeg(this.rotationAngle);
 
         this.jump = function () {
-            if (gravity > 0) {
-                console.log(gravity);
-                gravity -= this.jumpSize;
-            }
-            else {
-                gravity = -this.jumpSize;
-                console.log('gravity minimum')
-            }
-
-
-            if (this.y < 0) {
-                this.y = 0;
-            }
+            gravity = -this.jumpSize;           
         }
         this.update = function () {
 
             if (this.y + this.height + groundLevel < stage.height()) {
                 this.y += gravity;
-                gravity += 0.1;
+                gravity += 0.2;
+            }
+            if (this.y < 0) {
+                this.y = 0;
             }
         }
     }
