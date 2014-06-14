@@ -25,12 +25,12 @@ window.onload = function () {
     ninjaLayer,
     obstaclesLayer,
     currentScore = 0,
-    highScores = [],
+    highScore,
     gravity = 0,
     playerJumpAcceleration = 5,
     gameStates = {
         InGame: 1,
-        HighScores: 2,
+        Menu: 2,
         Pause: 3,
         GameOver: 4
     },
@@ -40,22 +40,19 @@ window.onload = function () {
     minObstacleHeight = 15,
     animation;
 
-    function parseScoresFile(xml) {
-        $(xml).find('score').each(function () {
-            highScores.push({
-                player: $(this).find('player').text().trim(),
-                points: $(this).find('points').text().trim()
-            });
-        });
+    function loadHighScore() {
+        if (localStorage['score']) {
+            highScore = parseInt(localStorage['score']);
+        }
+        else {
+            highScore = 0;
+        }
     }
-
-    function loadScores() {
-        $.ajax({
-            type: "GET",
-            url: "scores.xml",
-            dataType: "xml",
-            success: parseScoresFile
-        });
+    function updateHighScore() {
+        if (currentScore > highScore) {
+            highScore = currentScore;
+            localStorage['score'] = highScore;
+        }
     }
 
     function updateNinja() {
@@ -164,13 +161,12 @@ window.onload = function () {
         }
 
         if (currentState === gameStates.GameOver) {
+            updateHighScore();
+            console.log('high score '+ highScore);
             //implement functionality
 
         }
 
-        if (currentState === gameStates.HighScores) {
-            //implement functionality
-        }
     }
 
     function hasCrashed(ninja) {
@@ -427,8 +423,7 @@ window.onload = function () {
     }
 
     function startGame() {
-        loadScores();
-
+        loadHighScore();
         currentState = gameStates.InGame;
         ninjaHeight = ninjaWidth = (stageHeight / 8);
 
