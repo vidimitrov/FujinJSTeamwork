@@ -15,11 +15,13 @@ window.onload = function () {
     obstacles = [], //pipes
     grass,
     ninjaImage,
-    groundLevel = 70,
-    backgroundLevel = 120,
+    groundLevel = 70,    
     groundLayer,
     groundImageObj,
+    backgroundLevel = 120,
     backgroundImageObj,
+    backgroundX = 0,
+    backgroundY = 0,
     ninjaLayer,
     obstaclesLayer,
     currentScore = 0,
@@ -259,7 +261,7 @@ window.onload = function () {
         ninjaImage = new Image();
 
         // initiating Objects       
-        background = new Background(0, stageHeight - (backgroundLevel * 4.2), 'imgs/background.png', stageWidth * 2, backgroundLevel * 3.7);
+        background = new Background(backgroundX, backgroundY, 'imgs/background.png', stageWidth * 2.3, stageHeight * 0.9);
         grass = new Grass(0, stageHeight - (groundLevel * 2.2), 'imgs/grass.png', stageWidth * 2, groundLevel * 2.2, gameSpeed);
         ninja = new Ninja(ninjaStartPosX, ninjaStartPosY, ninjaImage, ninjaWidth, ninjaHeight, playerJumpAcceleration);
 
