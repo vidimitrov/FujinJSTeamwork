@@ -59,6 +59,7 @@
   <ItemGroup>
     <Content Include="imgs\grass.png" />
     <Content Include="imgs\Thumbs.db" />
+    <Content Include="JSLintNet.json" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -30,7 +30,7 @@ window.onload = function () {
         InGame: 1,
         HighScores: 2,
         Pause: 3,
-        GameOver: 4,
+        GameOver: 4
     },
     gapHeight,
     frames = 1,
@@ -38,54 +38,22 @@ window.onload = function () {
     minObstacleHeight = 15,
     animation;
 
-    startGame();
-
-    function startGame() {
-        loadScores();
-        currentState = gameStates.InGame;
-
-        ninjaHeight = ninjaWidth = (stageHeight / 8);
-
-        initializeKineticObjects();
-        initializeSound();
-        animation = new Kinetic.Animation(update, stage); //set time
-        animation.start();
-
-        //attach events
-        $(document).on('click', function () {
-            if (currentState === gameStates.InGame) {
-                ninja.jump();
-            }
-        });
-        //pause event 
-        $(document).on('keydown', function (ev) {
-            if (ev.keyCode === 80) {
-                togglePause();
-            }
+    function parseScoresFile(xml) {
+        $(xml).find('score').each(function () {
+            highScores.push({
+                player: $(this).find('player').text().trim(),
+                points: $(this).find('points').text().trim()
+            });
         });
     }
 
-    //single update function
-    function update() {
-        updateBackground();
-        updateObstacles();
-        updateGround();
-        updateNinja();
-
-        if (hasCrashed(ninja) && currentState === gameStates.InGame) {
-            currentState = gameStates.GameOver;
-            animation.stop();
-            playCrashSound();
-        }
-
-        if (currentState === gameStates.GameOver) {
-            //implement functionality
-
-        }
-        if (currentState === gameStates.HighScores) {
-            //implement functionality
-        }
-
+    function loadScores() {
+        $.ajax({
+            type: "GET",
+            url: "scores.xml",
+            dataType: "xml",
+            success: parseScoresFile
+        });
     }
 
     function updateNinja() {
@@ -97,23 +65,38 @@ window.onload = function () {
         switch (ninjaPosition) {
             //case 1:
             //case 2: 
-            case 3: ninjaImage.src = 'imgs/ninja1.png'; break;
+            case 3:
+                ninjaImage.src = 'imgs/ninja1.png';
+                break;
                 //case 4:
                 //case 5: 
-            case 6: ninjaImage.src = 'imgs/ninja2.png'; break;
+            case 6:
+                ninjaImage.src = 'imgs/ninja2.png';
+                break;
                 //case 7:
                 //case 8:
-            case 9: ninjaImage.src = 'imgs/ninja3.png'; break;
+            case 9:
+                ninjaImage.src = 'imgs/ninja3.png';
+                break;
                 //case 10:
                 //case 11:
-            case 12: ninjaImage.src = 'imgs/ninja4.png'; break;
+            case 12:
+                ninjaImage.src = 'imgs/ninja4.png';
+                break;
                 //case 13:
                 //case 14:
-            case 16: ninjaImage.src = 'imgs/ninja5.png'; break;
+            case 16:
+                ninjaImage.src = 'imgs/ninja5.png';
+                break;
                 //case 16:
                 //case 17:
-            case 18: ninjaImage.src = 'imgs/ninja6.png'; break;
-            default: if (ninjaPosition > 18) ninjaPosition = 0; break;
+            case 18:
+                ninjaImage.src = 'imgs/ninja6.png';
+                break;
+            default:
+                if (ninjaPosition > 18)
+                    ninjaPosition = 0;
+                break;
         }
     }
 
@@ -147,12 +130,14 @@ window.onload = function () {
         }
 
         frames++;
+
         if (frames === gameSpeed * 30) { //TODO animation frame speed // magic number here!!!
 
             var currentObstacles = generateObstacles(totalObstacleHeight, gapHeight, minObstacleHeight);
             for (i = 0; i < currentObstacles.length; i++) {
                 obstacles.push(currentObstacles[i]);
             }
+
             obstaclesLayer.add(currentObstacles[0].img);
             obstaclesLayer.add(currentObstacles[1].img);
             stage.add(obstaclesLayer);
@@ -163,23 +148,28 @@ window.onload = function () {
         }
     }
 
-    function loadScores() {
-        $.ajax({
-            type: "GET",
-            url: "scores.xml",
-            dataType: "xml",
-            success: parseScoresFile
-        });
-    }
+    //single update function
+    function update() {
+        updateBackground();
+        updateObstacles();
+        updateGround();
+        updateNinja();
 
-    function parseScoresFile(xml) {
-        $(xml).find('score').each(function () {
-            highScores.push({
-                player: $(this).find('player').text().trim(),
-                points: $(this).find('points').text().trim()
-            })
-        });
-    };
+        if (hasCrashed(ninja) && currentState === gameStates.InGame) {
+            currentState = gameStates.GameOver;
+            animation.stop();
+            playCrashSound();
+        }
+
+        if (currentState === gameStates.GameOver) {
+            //implement functionality
+
+        }
+
+        if (currentState === gameStates.HighScores) {
+            //implement functionality
+        }
+    }
 
     function hasCrashed(ninja) {
         if (ninja.y + ninja.height >= stageHeight - groundLevel) {
@@ -238,8 +228,7 @@ window.onload = function () {
             currentState = gameStates.Pause;
             animation.stop();
             $('.during-play-audio')[0].pause();
-        }
-        else if (currentState === gameStates.Pause) {
+        } else if (currentState === gameStates.Pause) {
             currentState = gameStates.InGame;
             animation.start();
             $('.during-play-audio')[0].play();
@@ -255,7 +244,7 @@ window.onload = function () {
         });
 
         // defining obsticle sizes
-        gapHeight = ninjaHeight * 3;
+        gapHeight = ninjaHeight * 2.5;
         totalObstacleHeight = stage.height() - groundLevel - gapHeight;
 
         // Defining Layers
@@ -287,7 +276,7 @@ window.onload = function () {
             backgroundLayer.add(backgroundImg);
             stage.add(backgroundLayer);
             backgroundLayer.setZIndex(0);
-        }
+        };
 
         backgroundImageObj.src = background.imgSrc;
 
@@ -302,7 +291,7 @@ window.onload = function () {
 
             groundLayer.add(grassImg);
             stage.add(groundLayer);
-        }
+        };
 
         groundImageObj.src = grass.imgSrc;
         ninjaLayer.add(ninja.img);
@@ -327,7 +316,7 @@ window.onload = function () {
 
         this.jump = function () {
             gravity = -this.jumpSize;
-        }
+        };
 
         this.update = function () {
             if (this.y + this.height + groundLevel < stage.height()) {
@@ -338,7 +327,7 @@ window.onload = function () {
             if (this.y < 0) {
                 this.y = 0;
             }
-        }
+        };
     }
 
     function Background(x, y, imageSource, width, height) {
@@ -353,7 +342,7 @@ window.onload = function () {
                 this.x = -1;
             }
             this.x -= 0.1;
-        }
+        };
     }
 
     function Grass(x, y, imageSource, width, height, speed) {
@@ -369,7 +358,7 @@ window.onload = function () {
                 this.x = -1;
             }
             this.x -= this.speed;
-        }
+        };
     }
 
     function Obstacle(x, y, width, height) {
@@ -377,7 +366,7 @@ window.onload = function () {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.img = new Kinetic.Rect({ //TODO add Image
+        this.img = new Kinetic.Rect({ //TODO: add Image 
             x: this.x,
             y: this.y,
             width: this.width,
@@ -387,7 +376,7 @@ window.onload = function () {
 
         this.update = function () {
             this.x -= gameSpeed; // magic number here
-        }
+        };
     }
 
     function playCrashSound() {
@@ -419,6 +408,34 @@ window.onload = function () {
             if (currentState === gameStates.InGame) {
                 $('.mouse-click-audio')[0].play();
             }
-        })
+        });
     }
-}
+
+    function startGame() {
+        loadScores();
+
+        currentState = gameStates.InGame;
+        ninjaHeight = ninjaWidth = (stageHeight / 8);
+
+        initializeKineticObjects();
+        initializeSound();
+
+        animation = new Kinetic.Animation(update, stage); //set time
+        animation.start();
+
+        //attach events
+        $(document).on('click', function () {
+            if (currentState === gameStates.InGame) {
+                ninja.jump();
+            }
+        });
+        //pause event 
+        $(document).on('keydown', function (ev) {
+            if (ev.keyCode === 80) {
+                togglePause();
+            }
+        });
+    }
+
+    startGame();
+};
