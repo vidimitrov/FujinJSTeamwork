@@ -16,8 +16,10 @@ window.onload = function () {
     grass,
     ninjaImage,
     groundLevel = 70,
+    backgroundLevel = 120,
     groundLayer,
     groundImageObj,
+    backgroundImageObj,
     ninjaLayer,
     obstaclesLayer,
     currentScore = 0,
@@ -36,9 +38,7 @@ window.onload = function () {
     minObstacleHeight = 15,
     animation;
 
-
     startGame();
-
 
     function startGame() {
         loadScores();
@@ -63,17 +63,16 @@ window.onload = function () {
                 togglePause();
             }
         });
-
-
     }
+
     //single update function
     function update() {
-
+        updateBackground();
         updateObstacles();
         updateGround();
         updateNinja();
 
-        if (hasCrashed(ninja) && currentState === gameStates.InGame) { 
+        if (hasCrashed(ninja) && currentState === gameStates.InGame) {
             currentState = gameStates.GameOver;
             animation.stop();
             playCrashSound();
@@ -118,13 +117,17 @@ window.onload = function () {
         }
     }
 
+    function updateBackground() {
+        background.update();
+        backgroundLayer.setX(background.x);
+    }
+
     function updateGround() {
         grass.update();
         groundLayer.setX(grass.x);
     }
 
     function updateObstacles() {
-
         for (var i = 0, len = obstacles.length; i < len; i++) {
             var currentObstacle = obstacles[i];
             currentObstacle.update();
@@ -141,7 +144,6 @@ window.onload = function () {
                 currentScore++;
                 console.log('score: ' + currentScore);
             }
-
         }
 
         frames++;
@@ -154,7 +156,9 @@ window.onload = function () {
             obstaclesLayer.add(currentObstacles[0].img);
             obstaclesLayer.add(currentObstacles[1].img);
             stage.add(obstaclesLayer);
-            obstaclesLayer.moveToBottom();
+            obstaclesLayer.setZIndex(1);
+            obstaclesLayer.draw();
+            //obstaclesLayer.moveToBottom();
             frames = 1;
         }
     }
@@ -174,8 +178,8 @@ window.onload = function () {
                 player: $(this).find('player').text().trim(),
                 points: $(this).find('points').text().trim()
             })
-        })
-    }
+        });
+    };
 
     function hasCrashed(ninja) {
         if (ninja.y + ninja.height >= stageHeight - groundLevel) {
@@ -191,7 +195,6 @@ window.onload = function () {
                 ninjaTopPoint = ninja.y + (ninja.y * 0.2),
                 ninjaBottom = ninja.y + ninja.height;
 
-
             if (ninjaLeftPoint >= currentObstacle.x && ninjaLeftPoint <= currentObstacle.x + currentObstacle.width || ninjaRightPoint >= currentObstacle.x && ninjaRightPoint <= currentObstacle.x + currentObstacle.width) {
 
                 if (ninjaTopPoint >= currentObstacle.y && ninjaTopPoint <= currentObstacle.y + currentObstacle.height || ninjaBottom >= currentObstacle.y && ninjaBottom <= currentObstacle.y + currentObstacle.height) {
@@ -199,6 +202,7 @@ window.onload = function () {
                 }
             }
         }
+
         return false;
     }
 
@@ -254,23 +258,38 @@ window.onload = function () {
         gapHeight = ninjaHeight * 3;
         totalObstacleHeight = stage.height() - groundLevel - gapHeight;
 
-        // Defininf Layers
-        ninjaLayer = new Kinetic.Layer();
-        obstaclesLayer = new Kinetic.Layer();
+        // Defining Layers
+        backgroundLayer = new Kinetic.Layer();
         groundLayer = new Kinetic.Layer();
+        obstaclesLayer = new Kinetic.Layer();
+        ninjaLayer = new Kinetic.Layer();
 
         // Defining Images
-        ninjaImage = new Image();
-        //ninjaImage.src = 'imgs/ninja.png';
+        backgroundImageObj = new Image();
         groundImageObj = new Image();
+        ninjaImage = new Image();
 
         // initiating Objects       
+        background = new Background(0, stageHeight - (backgroundLevel * 4.2), 'imgs/background.png', stageWidth * 2, backgroundLevel * 3.7);
+        grass = new Grass(0, stageHeight - (groundLevel * 2.2), 'imgs/grass.png', stageWidth * 2, groundLevel * 2.2, gameSpeed);
         ninja = new Ninja(ninjaStartPosX, ninjaStartPosY, ninjaImage, ninjaWidth, ninjaHeight, playerJumpAcceleration);
-        grass = new Grass(0, stageHeight - (groundLevel * 2.2), 'imgs/grass.png', stageWidth * 2, groundLevel * 2.2, gameSpeed)
 
         // Drawing Layers
-        ninjaLayer.add(ninja.img);
-        stage.add(ninjaLayer);
+        backgroundImageObj.onload = function () {
+            var backgroundImg = new Kinetic.Image({
+                image: backgroundImageObj,
+                x: background.x,
+                y: background.y,
+                width: background.width,
+                height: background.height
+            });
+
+            backgroundLayer.add(backgroundImg);
+            stage.add(backgroundLayer);
+            backgroundLayer.setZIndex(0);
+        }
+
+        backgroundImageObj.src = background.imgSrc;
 
         groundImageObj.onload = function () {
             var grassImg = new Kinetic.Image({
@@ -280,10 +299,14 @@ window.onload = function () {
                 width: grass.width,
                 height: grass.height
             });
+
             groundLayer.add(grassImg);
             stage.add(groundLayer);
         }
+
         groundImageObj.src = grass.imgSrc;
+        ninjaLayer.add(ninja.img);
+        stage.add(ninjaLayer);
     }
 
     function Ninja(x, y, img, width, height, jumpAcceleration) {
@@ -299,39 +322,37 @@ window.onload = function () {
             image: img,
             width: width,
             height: height,
-            // fill: 'pink'
+            //fill: 'pink'
         }).rotateDeg(this.rotationAngle);
 
         this.jump = function () {
-                gravity = -this.jumpSize;
+            gravity = -this.jumpSize;
         }
-        this.update = function () {
 
+        this.update = function () {
             if (this.y + this.height + groundLevel < stage.height()) {
                 this.y += gravity;
                 gravity += 0.2;
             }
+
             if (this.y < 0) {
                 this.y = 0;
             }
         }
     }
 
+    function Background(x, y, imageSource, width, height) {
+        this.x = x,
+        this.y = y,
+        this.width = width,
+        this.height = height,
+        this.imgSrc = imageSource;
 
-    function Obstacle(x, y, width, height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.img = new Kinetic.Rect({ //TODO add Image
-            x: this.x,
-            y: this.y,
-            width: this.width,
-            height: this.height,
-            fill: 'yellowgreen'
-        });
         this.update = function () {
-            this.x -= gameSpeed; // magic number here
+            if (this.x <= (-stageWidth)) {
+                this.x = -1;
+            }
+            this.x -= 0.1;
         }
     }
 
@@ -343,7 +364,6 @@ window.onload = function () {
         this.speed = speed,
         this.imgSrc = imageSource;
 
-
         this.update = function () {
             if (this.x <= (-stageWidth)) {
                 this.x = -1;
@@ -352,6 +372,23 @@ window.onload = function () {
         }
     }
 
+    function Obstacle(x, y, width, height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.img = new Kinetic.Rect({ //TODO add Image
+            x: this.x,
+            y: this.y,
+            width: this.width,
+            height: this.height,
+            fill: '#2F0801'
+        });
+
+        this.update = function () {
+            this.x -= gameSpeed; // magic number here
+        }
+    }
 
     function playCrashSound() {
         $('.during-play-audio')[0].pause();
