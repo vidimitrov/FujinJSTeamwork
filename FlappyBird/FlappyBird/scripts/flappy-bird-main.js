@@ -15,7 +15,7 @@ window.onload = function () {
     obstacles = [], //pipes
     grass,
     ninjaImage,
-    groundLevel = 70,    
+    groundLevel = 70,
     groundLayer,
     groundImageObj,
     backgroundLevel = 120,
@@ -215,9 +215,12 @@ window.onload = function () {
         }
 
         bottomObstacleHeight = totalObstacleHeight - topObstacleHeight;
+        var obstacleImage = new Image();
+        obstacleImage.src = 'imgs/obstacle.gif';
 
-        topObstacle = new Obstacle(stage.width(), 0, 70, topObstacleHeight);
-        bottomObstacle = new Obstacle(stage.width(), topObstacleHeight + gapHeight, 70, bottomObstacleHeight);
+        topObstacle = new Obstacle(stage.width(), 0, 70, topObstacleHeight, obstacleImage);
+        bottomObstacle = new Obstacle(stage.width(), topObstacleHeight + gapHeight, 70, bottomObstacleHeight, obstacleImage);
+        bottomObstacle
 
         currentObstacles.push(topObstacle);
         currentObstacles.push(bottomObstacle);
@@ -363,23 +366,33 @@ window.onload = function () {
         };
     }
 
-    function Obstacle(x, y, width, height) {
+    function Obstacle(x, y, width, height, image) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.img = new Kinetic.Rect({ //TODO: add Image 
+        console.log(image.height);
+        this.img = new Kinetic.Image({
             x: this.x,
             y: this.y,
+            image: image,
             width: this.width,
             height: this.height,
-            fill: '#2F0801'
+            fill: 'yellow',
+            crop: {
+                x: 300,
+                y: image.height - this.height * 2,
+                width: 100,
+                height: this.height * 2
+            }
+
         });
 
         this.update = function () {
             this.x -= gameSpeed; // magic number here
         };
     }
+
 
     function playCrashSound() {
         $('.during-play-audio')[0].pause();
