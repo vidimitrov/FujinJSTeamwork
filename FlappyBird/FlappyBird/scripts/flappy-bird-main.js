@@ -13,11 +13,13 @@ window.onload = function () {
     currentState,
     ninja, //ninja 
     obstacles = [], //pipes
-    grass,
+    rockGround,
     ninjaImage,
     groundLevel = 70,
     groundLayer,
     groundImageObj,
+    background,
+    backgroundLayer,
     backgroundLevel = 120,
     backgroundImageObj,
     backgroundX = 0,
@@ -39,10 +41,13 @@ window.onload = function () {
     totalObstacleHeight,
     minObstacleHeight = 15,
     scoresLayer,
+    startMenuLayer,
     currentResult,
     maxscoreRect,
     maxScore,
-    animation;
+    animation,
+    playTextRect,
+    playText;
 
     function loadHighScore() {
         if (localStorage['score']) {
@@ -109,8 +114,8 @@ window.onload = function () {
     }
 
     function updateGround() {
-        grass.update();
-        groundLayer.setX(grass.x);
+        rockGround.update();
+        groundLayer.setX(rockGround.x);
     }
 
     function updateObstacles() {
@@ -154,54 +159,61 @@ window.onload = function () {
 
     //single update function
     function update() {
-        updateBackground();
-        updateObstacles();
-        updateGround();
-        updateNinja();
+        if(currentState === gameStates.Menu){
+            startMenuLayer.add(playTextRect);
+            startMenuLayer.add(playText);
+            stage.add(startMenuLayer);
+        } else {
+            updateBackground();
+            updateObstacles();
+            updateGround();
+            updateNinja();
 
+            if (hasCrashed(ninja) && currentState === gameStates.InGame) {
+                currentState = gameStates.GameOver;
+                animation.stop();
+                playCrashSound();
+            }
 
-        if (hasCrashed(ninja) && currentState === gameStates.InGame) {
-            currentState = gameStates.GameOver;
-            animation.stop();
-            playCrashSound();
+            if (currentState === gameStates.GameOver) {
+                updateHighScore();
+                console.log('high score ' + highScore);
+
+                maxScore = new Kinetic.Text({
+                    x: 0,
+                    y: 60,
+                    text: 'SCORES: ' + currentScore + '\n\nHIGH SCORES:' + highScore,
+                    fontSize: 18,
+                    fontFamily: 'Calibri',
+                    fill: '#555',
+                    width: 380,
+                    padding: 20,
+                    align: 'center'
+                });
+
+                maxscoreRect = new Kinetic.Rect({
+                    x: 100,
+                    y: 60,
+                    stroke: '#555',
+                    strokeWidth: 5,
+                    fill: '#ddd',
+                    width: 200,
+                    height: maxScore.height(),
+                    shadowColor: 'black',
+                    shadowBlur: 10,
+                    shadowOffset: { x: 10, y: 10 },
+                    shadowOpacity: 0.2,
+                    cornerRadius: 10
+                });
+
+                scoresLayer.add(maxscoreRect);
+                scoresLayer.add(maxScore);
+                //implement functionality
+
+            }
         }
-
-        if (currentState === gameStates.GameOver) {
-            updateHighScore();
-            console.log('high score ' + highScore);
-
-            maxScore = new Kinetic.Text({
-                x: 0,
-                y: 60,
-                text: 'SCORES: ' + currentScore + '\n\nHIGH SCORES:' + highScore,
-                fontSize: 18,
-                fontFamily: 'Calibri',
-                fill: '#555',
-                width: 380,
-                padding: 20,
-                align: 'center'
-            });
-
-            maxscoreRect = new Kinetic.Rect({
-                x: 100,
-                y: 60,
-                stroke: '#555',
-                strokeWidth: 5,
-                fill: '#ddd',
-                width: 200,
-                height: maxScore.height(),
-                shadowColor: 'black',
-                shadowBlur: 10,
-                shadowOffset: { x: 10, y: 10 },
-                shadowOpacity: 0.2,
-                cornerRadius: 10
-            });
-
-            scoresLayer.add(maxscoreRect);
-            scoresLayer.add(maxScore);
-            //implement functionality
-
-        }
+        
+        
 
     }
 
@@ -288,6 +300,7 @@ window.onload = function () {
         obstaclesLayer = new Kinetic.Layer();
         ninjaLayer = new Kinetic.Layer();
         scoresLayer = new Kinetic.Layer();
+        startMenuLayer = new Kinetic.Layer();
 
         // Defining Images
         backgroundImageObj = new Image();
@@ -296,7 +309,7 @@ window.onload = function () {
 
         // initiating Objects       
         background = new Background(backgroundX, backgroundY, 'imgs/cave_background.jpg', stageWidth * 2.3, stageHeight);
-        grass = new Grass(0, stageHeight - (groundLevel * 1.5), 'imgs/double_rock_ground.png', stageWidth * 2, groundLevel * 1.5, gameSpeed);
+        rockGround = new RockGround(0, stageHeight - (groundLevel * 1.5), 'imgs/double_rock_ground.png', stageWidth * 2, groundLevel * 1.5, gameSpeed);
         ninja = new Ninja(ninjaStartPosX, ninjaStartPosY, ninjaImage, ninjaWidth, ninjaHeight, playerJumpAcceleration);
 
         // Drawing Layers
@@ -317,22 +330,19 @@ window.onload = function () {
         backgroundImageObj.src = background.imgSrc;
 
         groundImageObj.onload = function () {
-            var grassImg = new Kinetic.Image({
+            var rockGroundImg = new Kinetic.Image({
                 image: groundImageObj,
-                x: grass.x,
-                y: grass.y,
-                width: grass.width,
-                height: grass.height
+                x: rockGround.x,
+                y: rockGround.y,
+                width: rockGround.width,
+                height: rockGround.height
             });
 
-            groundLayer.add(grassImg);
+            groundLayer.add(rockGroundImg);
             stage.add(groundLayer);
         };
 
-
-
-
-        groundImageObj.src = grass.imgSrc;
+        groundImageObj.src = rockGround.imgSrc;
         ninjaLayer.add(ninja.img);
         stage.add(ninjaLayer);
 
@@ -350,6 +360,52 @@ window.onload = function () {
 
         scoresLayer.add(currentResult);
         stage.add(scoresLayer);
+        
+        playText = new Kinetic.Text({
+            x: 10,
+            y: 170,
+            text: 'Play',
+            fontSize: 21,
+            fontFamily: 'Calibri',
+            stroke: '#0C5EC5',
+            fill: '#555',
+            width: 380,
+            padding: 30,
+            align: 'center'
+        });
+
+        playTextRect = new Kinetic.Rect({
+            x: 150,
+            y: 180,
+            stroke: '#555',
+            strokeWidth: 5,
+            fill: '#ddd',
+            width: 100,
+            height: 60,
+            shadowColor: 'black',
+            shadowBlur: 10,
+            shadowOffset: { x: 10, y: 10 },
+            shadowOpacity: 0.2,
+            cornerRadius: 10
+        });
+
+        var logo = new Image();
+
+        logo.onload = function () {
+            var logoImg = new Kinetic.Image({
+                image: logo,
+                x: 80,
+                y: 100,
+                width: 240,
+                height: 71
+            });
+
+            startMenuLayer.add(logoImg);
+        };
+
+        logo.src = 'imgs/flappy_ninja_logo.png';
+        
+        stage.add(startMenuLayer);
     }
 
     function Ninja(x, y, img, width, height, jumpAcceleration) {
@@ -398,7 +454,7 @@ window.onload = function () {
         };
     }
 
-    function Grass(x, y, imageSource, width, height, speed) {
+    function RockGround(x, y, imageSource, width, height, speed) {
         this.x = x,
         this.y = y,
         this.width = width,
@@ -473,7 +529,7 @@ window.onload = function () {
 
     function startGame() {
         loadHighScore();
-        currentState = gameStates.InGame;
+        currentState = gameStates.Menu;
         ninjaHeight = ninjaWidth = (stageHeight / 8);
 
         initializeKineticObjects();
@@ -484,8 +540,18 @@ window.onload = function () {
 
         //attach events
         $(document).on('click', function () {
+            if(currentState === gameStates.Menu){
+                currentState = gameStates.InGame;
+                startMenuLayer.remove(playTextRect);
+                startMenuLayer.remove(playText);
+                //stage.remove(startMenuLayer);
+            }
             if (currentState === gameStates.InGame) {
                 ninja.jump();
+            }
+            if(currentState === gameStates.GameOver){
+                console.log('restarting...');
+                //Reset all the variables and start the game again
             }
         });
         //pause event 
