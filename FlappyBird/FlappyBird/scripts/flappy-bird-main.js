@@ -38,6 +38,10 @@ window.onload = function () {
     frames = 1,
     totalObstacleHeight,
     minObstacleHeight = 15,
+    scoresLayer,
+    currentResult,
+    maxscoreRect,
+    maxScore,
     animation;
 
     function loadHighScore() {
@@ -124,7 +128,14 @@ window.onload = function () {
             //scores when the rightmost part of the ninja reaches the middle of the obstacle
             if (i % 2 === 0 && (currentObstacle.x + currentObstacle.width / 2) - (gameSpeed / 2) <= ninja.x + ninja.width && (currentObstacle.x + currentObstacle.width / 2) + (gameSpeed / 2) >= ninja.x + ninja.width) {
                 currentScore++;
-                console.log('score: ' + currentScore);
+
+                currentResult.text = currentScore;
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!How to update the info in the layer here?!
+
+                scoresLayer.clearBeforeDraw();
+                
+                
+                console.log(currentResult.text);
             }
         }
 
@@ -153,7 +164,6 @@ window.onload = function () {
         updateObstacles();
         updateGround();
         updateNinja();
-		console.log(ninjaPosition + ninjaImage.src);
 
 
         if (hasCrashed(ninja) && currentState === gameStates.InGame) {
@@ -164,7 +174,37 @@ window.onload = function () {
 
         if (currentState === gameStates.GameOver) {
             updateHighScore();
-            console.log('high score '+ highScore);
+            console.log('high score ' + highScore);
+
+            maxScore = new Kinetic.Text({
+                x: 0,
+                y: 60,
+                text: 'SCORES: ' + currentScore + '\n\nHIGH SCORES:' + highScore,
+                fontSize: 18,
+                fontFamily: 'Calibri',
+                fill: '#555',
+                width: 380,
+                padding: 20,
+                align: 'center'
+            });
+
+            maxscoreRect = new Kinetic.Rect({
+                x: 100,
+                y: 60,
+                stroke: '#555',
+                strokeWidth: 5,
+                fill: '#ddd',
+                width: 200,
+                height: maxScore.height(),
+                shadowColor: 'black',
+                shadowBlur: 10,
+                shadowOffset: { x: 10, y: 10 },
+                shadowOpacity: 0.2,
+                cornerRadius: 10
+            });
+
+            scoresLayer.add(maxscoreRect);
+            scoresLayer.add(maxScore);
             //implement functionality
 
         }
@@ -213,11 +253,9 @@ window.onload = function () {
         }
 
         bottomObstacleHeight = stageHeight - (gapHeight + topObstacleHeight);
-        var obstacleImage = new Image();
-        obstacleImage.src = 'imgs/obstacle.gif';
 
-        topObstacle = new Obstacle(stage.width(), 0, 70, topObstacleHeight, obstacleImage);
-        bottomObstacle = new Obstacle(stage.width(), topObstacleHeight + gapHeight, 70, bottomObstacleHeight, obstacleImage);
+        topObstacle = new Obstacle(stage.width(), 0, 70, topObstacleHeight);
+        bottomObstacle = new Obstacle(stage.width(), topObstacleHeight + gapHeight, 70, bottomObstacleHeight);
         bottomObstacle
 
         currentObstacles.push(topObstacle);
@@ -255,6 +293,7 @@ window.onload = function () {
         groundLayer = new Kinetic.Layer();
         obstaclesLayer = new Kinetic.Layer();
         ninjaLayer = new Kinetic.Layer();
+        scoresLayer = new Kinetic.Layer();
 
         // Defining Images
         backgroundImageObj = new Image();
@@ -296,9 +335,27 @@ window.onload = function () {
             stage.add(groundLayer);
         };
 
+
+
+
         groundImageObj.src = grass.imgSrc;
         ninjaLayer.add(ninja.img);
         stage.add(ninjaLayer);
+
+        //scores layer below!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        currentResult = new Kinetic.Text({
+            x: stage.width() / 2,
+            y: 15,
+            text: currentScore,
+            fontSize: 30,
+            fontFamily: 'Calibri',
+            fill: 'white'
+        });
+
+        currentResult.offsetX(currentResult.width() / 2);
+
+        scoresLayer.add(currentResult);
+        stage.add(scoresLayer);
     }
 
     function Ninja(x, y, img, width, height, jumpAcceleration) {
@@ -314,7 +371,6 @@ window.onload = function () {
             image: img,
             width: width,
             height: height,
-            //fill: 'pink'
         }).rotateDeg(this.rotationAngle);
 
         this.jump = function () {
@@ -364,12 +420,11 @@ window.onload = function () {
         };
     }
 
-    function Obstacle(x, y, width, height, image) {
+    function Obstacle(x, y, width, height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        console.log(image.height);
         //rect
         this.img = new Kinetic.Rect({
             x: this.x,
@@ -383,24 +438,6 @@ window.onload = function () {
             cornerRadius: 5,
             opacity: 0.75
         });
-        //image
-        //this.img = new Kinetic.Image({
-        //    x: this.x,
-        //    y: this.y,
-        //    image: image,
-        //    width: this.width,
-        //    height: this.height,
-        //    fillLinearGradientColorStops: [0, 'red', 1, 'yellow'],
-
-        //    //fill: 'yellow',
-        //    crop: {
-        //        x: 300,
-        //        y: image.height - this.height * 2,
-        //        width: 100,
-        //        height: this.height * 2
-        //    }
-
-        //});
 
         this.update = function () {
             this.x -= gameSpeed; // magic number here
