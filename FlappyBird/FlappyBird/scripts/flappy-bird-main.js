@@ -84,7 +84,7 @@ window.onload = function () {
                 break;
                 //case 13:
                 //case 14:
-            case 16:
+            case 15:
                 ninjaImage.src = 'imgs/ninja5.png';
                 break;
                 //case 16:
@@ -153,6 +153,8 @@ window.onload = function () {
         updateObstacles();
         updateGround();
         updateNinja();
+		console.log(ninjaPosition + ninjaImage.src);
+
 
         if (hasCrashed(ninja) && currentState === gameStates.InGame) {
             currentState = gameStates.GameOver;
@@ -210,7 +212,7 @@ window.onload = function () {
             topObstacleHeight = topObstacleHeight - minObstacleHeight;
         }
 
-        bottomObstacleHeight = totalObstacleHeight - topObstacleHeight;
+        bottomObstacleHeight = stageHeight - (gapHeight + topObstacleHeight);
         var obstacleImage = new Image();
         obstacleImage.src = 'imgs/obstacle.gif';
 
@@ -368,21 +370,37 @@ window.onload = function () {
         this.width = width;
         this.height = height;
         console.log(image.height);
-        this.img = new Kinetic.Image({
+        //rect
+        this.img = new Kinetic.Rect({
             x: this.x,
             y: this.y,
-            image: image,
             width: this.width,
             height: this.height,
-            fill: 'yellow',
-            crop: {
-                x: 300,
-                y: image.height - this.height * 2,
-                width: 100,
-                height: this.height * 2
-            }
-
+            fillLinearGradientStartPoint: { x: -50, y: -50 },
+            fillLinearGradientEndPoint: { x: 100, y: 100 },
+            fillLinearGradientColorStops: [0, 'white', 1, 'black'],
+            stroke: 'grey',
+            cornerRadius: 5,
+            opacity: 0.75
         });
+        //image
+        //this.img = new Kinetic.Image({
+        //    x: this.x,
+        //    y: this.y,
+        //    image: image,
+        //    width: this.width,
+        //    height: this.height,
+        //    fillLinearGradientColorStops: [0, 'red', 1, 'yellow'],
+
+        //    //fill: 'yellow',
+        //    crop: {
+        //        x: 300,
+        //        y: image.height - this.height * 2,
+        //        width: 100,
+        //        height: this.height * 2
+        //    }
+
+        //});
 
         this.update = function () {
             this.x -= gameSpeed; // magic number here
