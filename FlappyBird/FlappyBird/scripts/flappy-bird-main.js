@@ -127,15 +127,9 @@ window.onload = function () {
 
             //scores when the rightmost part of the ninja reaches the middle of the obstacle
             if (i % 2 === 0 && (currentObstacle.x + currentObstacle.width / 2) - (gameSpeed / 2) <= ninja.x + ninja.width && (currentObstacle.x + currentObstacle.width / 2) + (gameSpeed / 2) >= ninja.x + ninja.width) {
-                currentScore++;
-
-                currentResult.text = currentScore;
-                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!How to update the info in the layer here?!
-
-                scoresLayer.clearBeforeDraw();
-                
-                
-                console.log(currentResult.text);
+                currentScore += 1;
+                currentResult.setText(currentScore);
+                scoresLayer.draw();
             }
         }
 
