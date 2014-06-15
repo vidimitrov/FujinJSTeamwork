@@ -1,4 +1,4 @@
-﻿/// <reference path="jquery.js" />
+/// <reference path="jquery.js" />
 /// <reference path="kinetic-v5.1.0.min.js" />
 window.onload = function () {
     var stage,
@@ -262,8 +262,8 @@ window.onload = function () {
         ninjaImage = new Image();
 
         // initiating Objects       
-        background = new Background(backgroundX, backgroundY, 'imgs/background.png', stageWidth * 2.3, stageHeight);
-        grass = new Grass(0, stageHeight - (groundLevel * 1.5), 'imgs/grass.png', stageWidth * 2, groundLevel * 1.5, gameSpeed);
+        background = new Background(backgroundX, backgroundY, 'imgs/cave_background.jpg', stageWidth * 2.3, stageHeight);
+        grass = new Grass(0, stageHeight - (groundLevel * 1.5), 'imgs/double_rock_ground.png', stageWidth * 2, groundLevel * 1.5, gameSpeed);
         ninja = new Ninja(ninjaStartPosX, ninjaStartPosY, ninjaImage, ninjaWidth, ninjaHeight, playerJumpAcceleration);
 
         // Drawing Layers
