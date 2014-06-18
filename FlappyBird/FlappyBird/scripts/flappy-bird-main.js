@@ -403,6 +403,12 @@ window.onload = function () {
             playTextRect.setStroke('#555');
         });
 
+        playText.on('click', function () {
+            currentState = gameStates.InGame;
+            startMenuLayer.remove(playTextRect);
+            startMenuLayer.remove(playText);
+        });
+
         var logo = new Image();
 
         logo.onload = function () {
@@ -554,12 +560,12 @@ window.onload = function () {
 
         //attach events
         $(document).on('click', function () {
-            if(currentState === gameStates.Menu){
-                currentState = gameStates.InGame;
-                startMenuLayer.remove(playTextRect);
-                startMenuLayer.remove(playText);
-                //stage.remove(startMenuLayer);
-            }
+            //if(currentState === gameStates.Menu){
+            //    currentState = gameStates.InGame;
+            //    startMenuLayer.remove(playTextRect);
+            //    startMenuLayer.remove(playText);
+            //    //stage.remove(startMenuLayer);
+            //}
             if (currentState === gameStates.InGame) {
                 ninja.jump();
             }
