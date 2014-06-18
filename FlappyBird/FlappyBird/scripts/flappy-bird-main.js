@@ -194,7 +194,7 @@ window.onload = function () {
                 });
 
                 maxscoreRect = new Kinetic.Rect({
-                    x: 100,
+                    x: 90,
                     y: 60,
                     stroke: '#555',
                     strokeWidth: 5,
@@ -363,71 +363,6 @@ window.onload = function () {
         scoresLayer.add(currentResult);
         stage.add(scoresLayer);
 
-        //playText = new Kinetic.Text({
-        //    x: 145,
-        //    y: 190,
-        //    text: 'Play',
-        //    fontSize: 21,
-        //    fontFamily: 'Calibri',
-        //    stroke: '#0C5EC5',
-        //    fill: '#555',
-        //    width: 110,
-        //    padding: 30,
-        //    align: 'center'
-        //});
-
-        //playTextRect = new Kinetic.Rect({
-        //    x: 150,
-        //    y: 200,
-        //    stroke: '#555',
-        //    strokeWidth: 5,
-        //    fill: '#ddd',
-        //    width: 100,
-        //    height: 60,
-        //    shadowColor: 'black',
-        //    shadowBlur: 10,
-        //    shadowOffset: { x: 10, y: 10 },
-        //    shadowOpacity: 0.2,
-        //    cornerRadius: 10
-        //});
-
-        //playText.on('mouseover', function () {
-        //    this.stroke('#00FA9A');
-        //    playText.setFontStyle('italic');
-        //    playText.setFontSize(23);
-        //    playTextRect.setStroke('#00FA9A');
-        //});
-
-        //playText.on('mouseout', function () {
-        //    this.stroke('blue');
-        //    playText.setFontStyle('normal');
-        //    playText.setFontSize(20);
-        //    playTextRect.setStroke('#555');
-        //});
-
-        //playText.on('click', function () {
-        //    currentState = gameStates.InGame;
-        //    startMenuLayer.remove(playTextRect);
-        //    startMenuLayer.remove(playText);
-        //});
-
-        //var logo = new Image();
-
-        //logo.onload = function () {
-        //    var logoImg = new Kinetic.Image({
-        //        image: logo,
-        //        x: 80,
-        //        y: 100,
-        //        width: 240,
-        //        height: 71
-        //    });
-
-        //    startMenuLayer.add(logoImg);
-        //};
-
-        //logo.src = 'imgs/flappy_ninja_logo.gif';
-
-        //stage.add(startMenuLayer);
     }
 
     function Ninja(x, y, img, width, height, jumpAcceleration) {
@@ -521,15 +456,25 @@ window.onload = function () {
         $('.during-play-audio')[0].pause();
 
         $('.crash-audio')[0].play();
+        $('.agony-audio')[0].play();
         setTimeout(function () {
             $('.crash-audio')[0].pause();
         }, 550);
     }
 
     function initializeSound() {
+        var buttonClickAudio = $('<audio type="audio/mpeg"></audio>').addClass('button-click-audio').attr('src', 'sounds/button-clicked.mp3');
+        $('body').append(buttonClickAudio);
+
+        var buttonHoverAudio = $('<audio type="audio/mpeg"></audio>').addClass('button-hover-audio').attr('src', 'sounds/button-hover.mp3');
+        $('body').append(buttonHoverAudio);
+
         //add mouse click sound panel
         var MouseClickAudio = $('<audio type="audio/mpeg"></audio>').addClass('mouse-click-audio').attr('src', 'sounds/mouse_click.mp3');
         $('body').append(MouseClickAudio);
+
+        var agonyAudio = $('<audio type="audio/mpeg"></audio>').addClass('agony-audio').attr('src', 'sounds/agony.wav');
+        $('body').append(agonyAudio);
 
         //add crush sound panel
         var crushAudio = $('<audio type="audio/mpeg"></audio>').addClass('crash-audio').attr('src', 'sounds/crash.mp3');
@@ -539,8 +484,6 @@ window.onload = function () {
         var duringPlayAudio = $('<audio type="audio/mpeg"></audio>').addClass('during-play-audio').attr('src', 'sounds/during_play.mp3');
         duringPlayAudio.attr('loop', 'loop');
         $('body').append(duringPlayAudio);
-
-        $('.during-play-audio')[0].play();
 
         $(document).on('click', function () {
             if (currentState === gameStates.InGame) {
@@ -573,7 +516,8 @@ window.onload = function () {
                 stroke: '#00FA9A',
                 'font-style': 'italic',
                 'font-size': 23,
-            })
+            });
+            $('.button-hover-audio')[0].play();
         });
         playButtonSet.mouseout(function () {
             playButtonSet.attr({
@@ -585,6 +529,8 @@ window.onload = function () {
         playButtonSet.click(function () {
             currentState = gameStates.InGame;
             paper.remove();
+            $('.button-click-audio')[0].play();
+            $('.during-play-audio')[0].play();
             animation.start();
         })
 
