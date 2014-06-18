@@ -395,6 +395,7 @@ window.onload = function () {
             playText.setFontSize(23);
             playTextRect.setStroke('#00FA9A');
             playTextRect.setShadowColor('cyan');
+            $('.button-hover-audio')[0].play();
         });
 
         playText.on('mouseout', function () {
@@ -409,6 +410,8 @@ window.onload = function () {
             currentState = gameStates.InGame;
             startMenuLayer.remove(playTextRect);
             startMenuLayer.remove(playText);
+            $('.button-click-audio')[0].play();
+            $('.during-play-audio')[0].play();
         });
 
         var logo = new Image();
@@ -521,15 +524,25 @@ window.onload = function () {
         $('.during-play-audio')[0].pause();
 
         $('.crash-audio')[0].play();
+         $('.agony-audio')[0].play();
         setTimeout(function () {
             $('.crash-audio')[0].pause();
         }, 550);
     }
 
     function initializeSound() {
+        var buttonClickAudio = $('<audio type="audio/mpeg"></audio>').addClass('button-click-audio').attr('src', 'sounds/button-clicked.mp3');
+        $('body').append(buttonClickAudio);
+
+        var buttonHoverAudio = $('<audio type="audio/mpeg"></audio>').addClass('button-hover-audio').attr('src', 'sounds/button-hover.mp3');
+        $('body').append(buttonHoverAudio);
+
         //add mouse click sound panel
         var MouseClickAudio = $('<audio type="audio/mpeg"></audio>').addClass('mouse-click-audio').attr('src', 'sounds/mouse_click.mp3');
-        $('body').append(MouseClickAudio);
+        $('body').append(MouseClickAudio);        
+
+        var agonyAudio = $('<audio type="audio/mpeg"></audio>').addClass('agony-audio').attr('src', 'sounds/agony.wav');
+        $('body').append(agonyAudio);
 
         //add crush sound panel
         var crushAudio = $('<audio type="audio/mpeg"></audio>').addClass('crash-audio').attr('src', 'sounds/crash.mp3');
@@ -539,9 +552,7 @@ window.onload = function () {
         var duringPlayAudio = $('<audio type="audio/mpeg"></audio>').addClass('during-play-audio').attr('src', 'sounds/during_play.mp3');
         duringPlayAudio.attr('loop', 'loop');
         $('body').append(duringPlayAudio);
-
-        $('.during-play-audio')[0].play();
-
+        
         $(document).on('click', function () {
             if (currentState === gameStates.InGame) {
                 $('.mouse-click-audio')[0].play();
