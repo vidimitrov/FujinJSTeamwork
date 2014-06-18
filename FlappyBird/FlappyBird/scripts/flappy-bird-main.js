@@ -363,7 +363,7 @@ window.onload = function () {
         
         playText = new Kinetic.Text({
             x: 145,
-            y: 170,
+            y: 190,
             text: 'Play',
             fontSize: 21,
             fontFamily: 'Calibri',
@@ -376,7 +376,7 @@ window.onload = function () {
 
         playTextRect = new Kinetic.Rect({
             x: 150,
-            y: 180,
+            y: 200,
             stroke: '#555',
             strokeWidth: 5,
             fill: '#ddd',
@@ -417,7 +417,7 @@ window.onload = function () {
             startMenuLayer.add(logoImg);
         };
 
-        logo.src = 'imgs/flappy_ninja_logo.png';
+        logo.src = 'imgs/flappy_ninja_logo.gif';
         
         stage.add(startMenuLayer);
     }
