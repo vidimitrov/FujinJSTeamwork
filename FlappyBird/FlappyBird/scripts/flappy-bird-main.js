@@ -389,6 +389,20 @@ window.onload = function () {
             cornerRadius: 10
         });
 
+        playText.on('mouseover', function () {
+            this.stroke('#00FA9A');
+            playText.setFontStyle('italic');
+            playText.setFontSize(23);
+            playTextRect.setStroke('#00FA9A');
+        });
+
+        playText.on('mouseout', function () {
+            this.stroke('blue');
+            playText.setFontStyle('normal');
+            playText.setFontSize(20);
+            playTextRect.setStroke('#555');
+        });
+
         var logo = new Image();
 
         logo.onload = function () {
