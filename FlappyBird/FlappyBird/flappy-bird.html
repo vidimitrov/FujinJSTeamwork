@@ -10,9 +10,19 @@
         canvas {
             border: 1px solid black !important;
         }
+        #container, #svg{
+            position:absolute;
+            top:10px;
+            left:10px;
+        }
+        #svg{
+            z-index:5;
+        }
     </style>
 </head>
 <body>
     <div id="container"></div>
+
+    <div id="svg"></div>
 </body>
 </html>

@@ -1,3 +1,4 @@
+/// <reference path="raphael-min.js" />
 /// <reference path="jquery.js" />
 /// <reference path="kinetic-v5.1.0.min.js" />
 window.onload = function () {
@@ -159,7 +160,8 @@ window.onload = function () {
 
     //single update function
     function update() {
-        if(currentState === gameStates.Menu){
+        console.log(5)
+        if (currentState === gameStates.Menu) {
             startMenuLayer.add(playTextRect);
             startMenuLayer.add(playText);
             stage.add(startMenuLayer);
@@ -212,8 +214,8 @@ window.onload = function () {
 
             }
         }
-        
-        
+
+
 
     }
 
@@ -360,72 +362,72 @@ window.onload = function () {
 
         scoresLayer.add(currentResult);
         stage.add(scoresLayer);
-        
-        playText = new Kinetic.Text({
-            x: 145,
-            y: 190,
-            text: 'Play',
-            fontSize: 21,
-            fontFamily: 'Calibri',
-            stroke: '#0C5EC5',
-            fill: '#555',
-            width: 110,
-            padding: 30,
-            align: 'center'
-        });
 
-        playTextRect = new Kinetic.Rect({
-            x: 150,
-            y: 200,
-            stroke: '#555',
-            strokeWidth: 5,
-            fill: '#ddd',
-            width: 100,
-            height: 60,
-            shadowColor: 'black',
-            shadowBlur: 10,
-            shadowOffset: { x: 10, y: 10 },
-            shadowOpacity: 0.2,
-            cornerRadius: 10
-        });
+        //playText = new Kinetic.Text({
+        //    x: 145,
+        //    y: 190,
+        //    text: 'Play',
+        //    fontSize: 21,
+        //    fontFamily: 'Calibri',
+        //    stroke: '#0C5EC5',
+        //    fill: '#555',
+        //    width: 110,
+        //    padding: 30,
+        //    align: 'center'
+        //});
 
-        playText.on('mouseover', function () {
-            this.stroke('#00FA9A');
-            playText.setFontStyle('italic');
-            playText.setFontSize(23);
-            playTextRect.setStroke('#00FA9A');
-        });
+        //playTextRect = new Kinetic.Rect({
+        //    x: 150,
+        //    y: 200,
+        //    stroke: '#555',
+        //    strokeWidth: 5,
+        //    fill: '#ddd',
+        //    width: 100,
+        //    height: 60,
+        //    shadowColor: 'black',
+        //    shadowBlur: 10,
+        //    shadowOffset: { x: 10, y: 10 },
+        //    shadowOpacity: 0.2,
+        //    cornerRadius: 10
+        //});
 
-        playText.on('mouseout', function () {
-            this.stroke('blue');
-            playText.setFontStyle('normal');
-            playText.setFontSize(20);
-            playTextRect.setStroke('#555');
-        });
+        //playText.on('mouseover', function () {
+        //    this.stroke('#00FA9A');
+        //    playText.setFontStyle('italic');
+        //    playText.setFontSize(23);
+        //    playTextRect.setStroke('#00FA9A');
+        //});
 
-        playText.on('click', function () {
-            currentState = gameStates.InGame;
-            startMenuLayer.remove(playTextRect);
-            startMenuLayer.remove(playText);
-        });
+        //playText.on('mouseout', function () {
+        //    this.stroke('blue');
+        //    playText.setFontStyle('normal');
+        //    playText.setFontSize(20);
+        //    playTextRect.setStroke('#555');
+        //});
 
-        var logo = new Image();
+        //playText.on('click', function () {
+        //    currentState = gameStates.InGame;
+        //    startMenuLayer.remove(playTextRect);
+        //    startMenuLayer.remove(playText);
+        //});
 
-        logo.onload = function () {
-            var logoImg = new Kinetic.Image({
-                image: logo,
-                x: 80,
-                y: 100,
-                width: 240,
-                height: 71
-            });
+        //var logo = new Image();
 
-            startMenuLayer.add(logoImg);
-        };
+        //logo.onload = function () {
+        //    var logoImg = new Kinetic.Image({
+        //        image: logo,
+        //        x: 80,
+        //        y: 100,
+        //        width: 240,
+        //        height: 71
+        //    });
 
-        logo.src = 'imgs/flappy_ninja_logo.gif';
-        
-        stage.add(startMenuLayer);
+        //    startMenuLayer.add(logoImg);
+        //};
+
+        //logo.src = 'imgs/flappy_ninja_logo.gif';
+
+        //stage.add(startMenuLayer);
     }
 
     function Ninja(x, y, img, width, height, jumpAcceleration) {
@@ -547,16 +549,57 @@ window.onload = function () {
         });
     }
 
+    function initializeSvgObjects() {
+        var paper = Raphael('svg', stageWidth, stageHeight);
+
+        var playButton = paper.rect(150, 200, 100, 60, 10),
+            playButtonText = paper.text(200, 230, 'Play'),
+            logoImage = paper.image('imgs/flappy_ninja_logo.gif', 80, 100, 240, 71);
+        playButton.attr({
+            stroke: '#555',
+            'stroke-width': 5,
+            fill: '#ddd',
+        });
+        playButtonText.attr({
+            'font-size': 21,
+            'font-family': 'Calibri',
+            stroke: '#555',
+            fill: '#ddd',
+        });
+
+        var playButtonSet = paper.set().push(playButton, playButtonText);
+        playButtonSet.mouseover(function () {
+            playButtonSet.attr({
+                stroke: '#00FA9A',
+                'font-style': 'italic',
+                'font-size': 23,
+            })
+        });
+        playButtonSet.mouseout(function () {
+            playButtonSet.attr({
+                stroke: '#555',
+                'font-style': 'normal',
+                'font-size': 21,
+            })
+        });
+        playButtonSet.click(function () {
+            currentState = gameStates.InGame;
+            paper.remove();
+            animation.start();
+        })
+
+    }
     function startGame() {
+
         loadHighScore();
         currentState = gameStates.Menu;
         ninjaHeight = ninjaWidth = (stageHeight / 8);
-
+        initializeSvgObjects();
         initializeKineticObjects();
+
         initializeSound();
 
         animation = new Kinetic.Animation(update, stage); //set time
-        animation.start();
 
         //attach events
         $(document).on('click', function () {
@@ -569,7 +612,7 @@ window.onload = function () {
             if (currentState === gameStates.InGame) {
                 ninja.jump();
             }
-            if(currentState === gameStates.GameOver){
+            if (currentState === gameStates.GameOver) {
                 console.log('restarting...');
                 //Reset all the variables and start the game again
             }
