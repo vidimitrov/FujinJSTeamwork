@@ -192,7 +192,7 @@ window.onload = function () {
                 });
 
                 maxscoreRect = new Kinetic.Rect({
-                    x: 100,
+                    x: 90,
                     y: 60,
                     stroke: '#555',
                     strokeWidth: 5,
@@ -379,7 +379,7 @@ window.onload = function () {
             y: 200,
             stroke: '#555',
             strokeWidth: 5,
-            fill: '#ddd',
+            fill: 'rgba(0, 0, 0, 0.8)',
             width: 100,
             height: 60,
             shadowColor: 'black',
@@ -394,6 +394,7 @@ window.onload = function () {
             playText.setFontStyle('italic');
             playText.setFontSize(23);
             playTextRect.setStroke('#00FA9A');
+            playTextRect.setShadowColor('cyan');
         });
 
         playText.on('mouseout', function () {
@@ -401,6 +402,7 @@ window.onload = function () {
             playText.setFontStyle('normal');
             playText.setFontSize(20);
             playTextRect.setStroke('#555');
+            playTextRect.setShadowColor('black');
         });
 
         playText.on('click', function () {
