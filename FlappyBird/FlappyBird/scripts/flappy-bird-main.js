@@ -362,14 +362,14 @@ window.onload = function () {
         stage.add(scoresLayer);
         
         playText = new Kinetic.Text({
-            x: 10,
+            x: 145,
             y: 170,
             text: 'Play',
             fontSize: 21,
             fontFamily: 'Calibri',
             stroke: '#0C5EC5',
             fill: '#555',
-            width: 380,
+            width: 110,
             padding: 30,
             align: 'center'
         });
