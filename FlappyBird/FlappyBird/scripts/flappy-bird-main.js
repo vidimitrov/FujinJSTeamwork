@@ -462,25 +462,25 @@ window.onload = function () {
     }
 
     function initializeSound() {
-        var buttonClickAudio = $('<audio type="audio/mpeg"></audio>').addClass('button-click-audio').attr('src', 'sounds/button-clicked.mp3');
+        var buttonClickAudio = $('<audio type="audio/mpeg"></audio>').addClass('button-click-audio').attr('src', 'sounds/button-clicked.wav');
         $('body').append(buttonClickAudio);
 
-        var buttonHoverAudio = $('<audio type="audio/mpeg"></audio>').addClass('button-hover-audio').attr('src', 'sounds/button-hover.mp3');
+        var buttonHoverAudio = $('<audio type="audio/mpeg"></audio>').addClass('button-hover-audio').attr('src', 'sounds/button-hover.wav');
         $('body').append(buttonHoverAudio);
 
         //add mouse click sound panel
-        var MouseClickAudio = $('<audio type="audio/mpeg"></audio>').addClass('mouse-click-audio').attr('src', 'sounds/mouse_click.mp3');
+        var MouseClickAudio = $('<audio type="audio/mpeg"></audio>').addClass('mouse-click-audio').attr('src', 'sounds/mouse_click.wav');
         $('body').append(MouseClickAudio);
 
         var agonyAudio = $('<audio type="audio/mpeg"></audio>').addClass('agony-audio').attr('src', 'sounds/agony.wav');
         $('body').append(agonyAudio);
 
         //add crush sound panel
-        var crushAudio = $('<audio type="audio/mpeg"></audio>').addClass('crash-audio').attr('src', 'sounds/crash.mp3');
+        var crushAudio = $('<audio type="audio/mpeg"></audio>').addClass('crash-audio').attr('src', 'sounds/crash.wav');
         $('body').append(crushAudio);
 
         //add duringplay panel
-        var duringPlayAudio = $('<audio type="audio/mpeg"></audio>').addClass('during-play-audio').attr('src', 'sounds/during_play.mp3');
+        var duringPlayAudio = $('<audio type="audio/mpeg"></audio>').addClass('during-play-audio').attr('src', 'sounds/during_play.wav');
         duringPlayAudio.attr('loop', 'loop');
         $('body').append(duringPlayAudio);
 
