@@ -362,7 +362,6 @@ window.onload = function () {
 
         scoresLayer.add(currentResult);
         stage.add(scoresLayer);
-
     }
 
     function Ninja(x, y, img, width, height, jumpAcceleration) {
@@ -559,14 +558,21 @@ window.onload = function () {
                 ninja.jump();
             }
             if (currentState === gameStates.GameOver) {
-                console.log('restarting...');
-                //Reset all the variables and start the game again
+            // restar the game
+                currentScore = 0;
+                currentResult.setText(currentScore);
+                stage.clear();
+                obstacles = [];
+                startGame();
+                       
+               
             }
         });
         //pause event 
         $(document).on('keydown', function (ev) {
             if (ev.keyCode === 80) {
                 togglePause();
+               stage.clear();
             }
         });
     }
