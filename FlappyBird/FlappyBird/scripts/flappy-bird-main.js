@@ -2,45 +2,44 @@
 /// <reference path="jquery.js" />
 /// <reference path="kinetic-v5.1.0.min.js" />
 window.onload = function () {
-    var stage,
+    var STAGE,
     ninjaPosition = 0,
-    stageWidth = 400,
-    stageHeight = 500,
-    gameSpeed = 3,
-    ninjaStartPosX = 25,
-    ninjaStartPosY = 150,
-    ninjaHeight,
-    ninjaWidth,
-    currentState,
-    ninja, //ninja 
-    obstacles = [], //pipes
-    rockGround,
-    ninjaImage,
-    groundLevel = 70,
-    groundLayer,
-    groundImageObj,
-    background,
-    backgroundLayer,
-    backgroundLevel = 120,
-    backgroundImageObj,
-    backgroundX = 0,
-    backgroundY = 0,
-    ninjaLayer,
-    obstaclesLayer,
-    currentScore = 0,
-    highScore,
-    gravity = 0,
-    playerJumpAcceleration = 5,
-    gameStates = {
+    STAGE_WIDTH = 400,
+    STAGE_HEIGHT = 500,
+    GAME_SPEED = 3,
+    NINJA_START_POS_X = 25,
+    NINJA_START_POS_y = 150,
+    GRAVITY = 0,
+    PLAYER_JUMP_ACCELERATION = 6,
+    GAME_STATES = {
         InGame: 1,
         Menu: 2,
         Pause: 3,
         GameOver: 4
     },
+    MIN_OBSTACLE_HEIGHT = 15,
+    BACKGROUND_X = 0,
+    BACKGROUND_Y = 0,
+    GROUND_LEVEL = 70,
+    ninjaHeight,
+    ninjaWidth,
+    currentState,
+    ninja,
+    obstacles = [],
+    rockGround,
+    ninjaImage,
+    groundLayer,
+    groundImageObj,
+    background,
+    backgroundLayer,
+    backgroundImageObj,
+    ninjaLayer,
+    obstaclesLayer,
+    currentScore,
+    highScore,
     gapHeight,
-    frames = 1,
+    frames,
     totalObstacleHeight,
-    minObstacleHeight = 15,
     scoresLayer,
     startMenuLayer,
     currentResult,
@@ -67,38 +66,26 @@ window.onload = function () {
 
     function updateNinja() {
         ninja.update();
-        ninja.img.setY(ninja.y); //refactor
+        ninja.img.setY(ninja.y);
 
-        //Attempt to animate ninja!!!
+        //animate ninja!!!
         ninjaPosition += 0.5;
         switch (ninjaPosition) {
-            //case 1:
-            //case 2: 
             case 3:
                 ninjaImage.src = 'imgs/ninja1.png';
                 break;
-                //case 4:
-                //case 5: 
             case 6:
                 ninjaImage.src = 'imgs/ninja2.png';
                 break;
-                //case 7:
-                //case 8:
             case 9:
                 ninjaImage.src = 'imgs/ninja3.png';
                 break;
-                //case 10:
-                //case 11:
             case 12:
                 ninjaImage.src = 'imgs/ninja4.png';
                 break;
-                //case 13:
-                //case 14:
             case 15:
                 ninjaImage.src = 'imgs/ninja5.png';
                 break;
-                //case 16:
-                //case 17:
             case 18:
                 ninjaImage.src = 'imgs/ninja6.png';
                 break;
@@ -130,54 +117,53 @@ window.onload = function () {
                 i--;
                 len--;
             }
+            var obstacleMiddle = (currentObstacle.x + currentObstacle.width / 2),
+                ninjaRightmostPoint = ninja.x + ninja.width;
 
             //scores when the rightmost part of the ninja reaches the middle of the obstacle
-            if (i % 2 === 0 && (currentObstacle.x + currentObstacle.width / 2) - (gameSpeed / 2) <= ninja.x + ninja.width && (currentObstacle.x + currentObstacle.width / 2) + (gameSpeed / 2) >= ninja.x + ninja.width) {
+            if (i % 2 === 0 && obstacleMiddle - (GAME_SPEED / 2) <= ninjaRightmostPoint
+                && obstacleMiddle + (GAME_SPEED / 2) >= ninjaRightmostPoint) {
                 currentScore += 1;
                 currentResult.setText(currentScore);
-                scoresLayer.draw();
             }
         }
-
         frames++;
+        //obstacle generation
+        if (frames === GAME_SPEED * 30) {
 
-        if (frames === gameSpeed * 30) { //TODO animation frame speed // magic number here!!!
-
-            var currentObstacles = generateObstacles(totalObstacleHeight, gapHeight, minObstacleHeight);
+            var currentObstacles = generateObstacles(totalObstacleHeight, gapHeight, MIN_OBSTACLE_HEIGHT);
             for (i = 0; i < currentObstacles.length; i++) {
                 obstacles.push(currentObstacles[i]);
             }
 
             obstaclesLayer.add(currentObstacles[0].img);
             obstaclesLayer.add(currentObstacles[1].img);
-            stage.add(obstaclesLayer);
+            STAGE.add(obstaclesLayer);
             obstaclesLayer.setZIndex(1);
-            obstaclesLayer.draw();
-            //obstaclesLayer.moveToBottom();
             frames = 1;
         }
     }
 
     //single update function
     function update() {
-        console.log(5)
-        if (currentState === gameStates.Menu) {
+        if (currentState === GAME_STATES.Menu) {
             startMenuLayer.add(playTextRect);
             startMenuLayer.add(playText);
-            stage.add(startMenuLayer);
-        } else {
+            STAGE.add(startMenuLayer);
+        }
+        else {
             updateBackground();
             updateObstacles();
             updateGround();
             updateNinja();
 
-            if (hasCrashed(ninja) && currentState === gameStates.InGame) {
-                currentState = gameStates.GameOver;
+            if (hasCrashed(ninja) && currentState === GAME_STATES.InGame) {
+                currentState = GAME_STATES.GameOver;
                 animation.stop();
                 playCrashSound();
             }
 
-            if (currentState === gameStates.GameOver) {
+            if (currentState === GAME_STATES.GameOver) {
                 updateHighScore();
                 console.log('high score ' + highScore);
 
@@ -208,28 +194,78 @@ window.onload = function () {
                     cornerRadius: 10
                 });
 
-                scoresLayer.add(maxscoreRect);
-                scoresLayer.add(maxScore);
-                //implement functionality
+                playText = new Kinetic.Text({
+                    x: 145,
+                    y: 190,
+                    text: 'Reset',
+                    fontSize: 21,
+                    fontFamily: 'Calibri',
+                    stroke: '#0C5EC5',
+                    fill: '#555',
+                    width: 110,
+                    padding: 30,
+                    align: 'center'
+                });
 
+                playTextRect = new Kinetic.Rect({
+                    x: 150,
+                    y: 200,
+                    stroke: '#555',
+                    strokeWidth: 5,
+                    fill: '#ddd',
+                    width: 100,
+                    height: 60,
+                    shadowColor: 'black',
+                    shadowBlur: 10,
+                    shadowOffset: { x: 10, y: 10 },
+                    shadowOpacity: 0.2,
+                    cornerRadius: 10
+                });
+
+                playText.on('mouseover', function () {
+                    this.stroke('#00FA9A');
+                    playText.setFontStyle('italic');
+                    playText.setFontSize(23);
+                    playTextRect.setStroke('#00FA9A');
+                });
+
+                playText.on('mouseout', function () {
+                    this.stroke('blue');
+                    playText.setFontStyle('normal');
+                    playText.setFontSize(20);
+                    playTextRect.setStroke('#555');
+                });
+
+                playText.on('click', function () {
+                    
+                    currentScore = 0;
+                    currentResult.setText(currentScore);
+                    STAGE.clear();
+                    obstacles = [];
+                    startGame();
+                    currentState = GAME_STATES.InGame;
+                    startMenuLayer.remove(playTextRect);
+                    startMenuLayer.remove(playText);
+                });
+
+                scoresLayer.add(maxscoreRect);
+                scoresLayer.add(playTextRect);
+                scoresLayer.add(playText);
+                scoresLayer.add(maxScore);
             }
         }
-
-
-
     }
 
     function hasCrashed(ninja) {
-        if (ninja.y + ninja.height >= stageHeight - groundLevel) {
+        if (ninja.y + ninja.height >= STAGE_HEIGHT - GROUND_LEVEL) {
             return true;
         }
 
         for (var i = 0; i < obstacles.length; i++) {
 
             var currentObstacle = obstacles[i];
-            // console.log('ninja x: ' + ninja.x + ' y: ' + ninja.y + ' width: ' + ninja.width + ' height: ' + ninja.height);
             var ninjaLeftPoint = ninja.x,
-                ninjaRightPoint = ninja.x + (ninja.width * 0.6),
+                ninjaRightPoint = ninja.x + (ninja.width * 0.7),
                 ninjaTopPoint = ninja.y + (ninja.y * 0.2),
                 ninjaBottom = ninja.y + ninja.height;
 
@@ -240,7 +276,6 @@ window.onload = function () {
                 }
             }
         }
-
         return false;
     }
 
@@ -253,18 +288,17 @@ window.onload = function () {
 
         topObstacleHeight = (totalObstacleHeight) * Math.random() | 0;
 
-        if (topObstacleHeight < minObstacleHeight) {
-            topObstacleHeight = minObstacleHeight;
+        if (topObstacleHeight < MIN_OBSTACLE_HEIGHT) {
+            topObstacleHeight = MIN_OBSTACLE_HEIGHT;
         }
-        else if (topObstacleHeight > topObstacleHeight - minObstacleHeight) {
-            topObstacleHeight = topObstacleHeight - minObstacleHeight;
+        else if (topObstacleHeight > topObstacleHeight - MIN_OBSTACLE_HEIGHT) {
+            topObstacleHeight = topObstacleHeight - MIN_OBSTACLE_HEIGHT;
         }
 
-        bottomObstacleHeight = stageHeight - (gapHeight + topObstacleHeight);
+        bottomObstacleHeight = STAGE_HEIGHT - (gapHeight + topObstacleHeight);
 
-        topObstacle = new Obstacle(stage.width(), 0, 70, topObstacleHeight);
-        bottomObstacle = new Obstacle(stage.width(), topObstacleHeight + gapHeight, 70, bottomObstacleHeight);
-        bottomObstacle
+        topObstacle = new Obstacle(STAGE.width(), 0, 70, topObstacleHeight);
+        bottomObstacle = new Obstacle(STAGE.width(), topObstacleHeight + gapHeight, 70, bottomObstacleHeight);
 
         currentObstacles.push(topObstacle);
         currentObstacles.push(bottomObstacle);
@@ -273,12 +307,12 @@ window.onload = function () {
     }
 
     function togglePause() {
-        if (currentState === gameStates.InGame) {
-            currentState = gameStates.Pause;
+        if (currentState === GAME_STATES.InGame) {
+            currentState = GAME_STATES.Pause;
             animation.stop();
             $('.during-play-audio')[0].pause();
-        } else if (currentState === gameStates.Pause) {
-            currentState = gameStates.InGame;
+        } else if (currentState === GAME_STATES.Pause) {
+            currentState = GAME_STATES.InGame;
             animation.start();
             $('.during-play-audio')[0].play();
         }
@@ -286,15 +320,15 @@ window.onload = function () {
 
     function initializeKineticObjects() {
         // Defining Stage
-        stage = new Kinetic.Stage({
+        STAGE = new Kinetic.Stage({
             container: 'container',
-            width: stageWidth,
-            height: stageHeight,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
         });
 
         // defining obsticle sizes
         gapHeight = ninjaHeight * 2.5;
-        totalObstacleHeight = stage.height() - groundLevel - gapHeight;
+        totalObstacleHeight = STAGE.height() - GROUND_LEVEL - gapHeight;
 
         // Defining Layers
         backgroundLayer = new Kinetic.Layer();
@@ -310,9 +344,9 @@ window.onload = function () {
         ninjaImage = new Image();
 
         // initiating Objects       
-        background = new Background(backgroundX, backgroundY, 'imgs/cave_background.jpg', stageWidth * 2.3, stageHeight);
-        rockGround = new RockGround(0, stageHeight - (groundLevel * 1.5), 'imgs/double_rock_ground.png', stageWidth * 2, groundLevel * 1.5, gameSpeed);
-        ninja = new Ninja(ninjaStartPosX, ninjaStartPosY, ninjaImage, ninjaWidth, ninjaHeight, playerJumpAcceleration);
+        background = new Background(BACKGROUND_X, BACKGROUND_Y, 'imgs/cave_background.jpg', STAGE_WIDTH * 2.3, STAGE_HEIGHT);
+        rockGround = new RockGround(0, STAGE_HEIGHT - (GROUND_LEVEL * 1.5), 'imgs/double_rock_ground.png', STAGE_WIDTH * 2, GROUND_LEVEL * 1.5, GAME_SPEED);
+        ninja = new Ninja(NINJA_START_POS_X, NINJA_START_POS_y, ninjaImage, ninjaWidth, ninjaHeight, PLAYER_JUMP_ACCELERATION);
 
         // Drawing Layers
         backgroundImageObj.onload = function () {
@@ -325,12 +359,12 @@ window.onload = function () {
             });
 
             backgroundLayer.add(backgroundImg);
-            stage.add(backgroundLayer);
+            STAGE.add(backgroundLayer);
             backgroundLayer.setZIndex(0);
         };
 
+        // bottom layer
         backgroundImageObj.src = background.imgSrc;
-
         groundImageObj.onload = function () {
             var rockGroundImg = new Kinetic.Image({
                 image: groundImageObj,
@@ -341,16 +375,15 @@ window.onload = function () {
             });
 
             groundLayer.add(rockGroundImg);
-            stage.add(groundLayer);
+            STAGE.add(groundLayer);
         };
 
         groundImageObj.src = rockGround.imgSrc;
         ninjaLayer.add(ninja.img);
-        stage.add(ninjaLayer);
+        STAGE.add(ninjaLayer);
 
-        //scores layer below!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         currentResult = new Kinetic.Text({
-            x: stage.width() / 2,
+            x: STAGE.width() / 2,
             y: 15,
             text: currentScore,
             fontSize: 30,
@@ -359,9 +392,8 @@ window.onload = function () {
         });
 
         currentResult.offsetX(currentResult.width() / 2);
-
         scoresLayer.add(currentResult);
-        stage.add(scoresLayer);
+        STAGE.add(scoresLayer);
     }
 
     function Ninja(x, y, img, width, height, jumpAcceleration) {
@@ -380,13 +412,13 @@ window.onload = function () {
         }).rotateDeg(this.rotationAngle);
 
         this.jump = function () {
-            gravity = -this.jumpSize;
+            GRAVITY = -this.jumpSize;
         };
 
         this.update = function () {
-            if (this.y + this.height + groundLevel < stage.height()) {
-                this.y += gravity;
-                gravity += 0.2;
+            if (this.y + this.height + GROUND_LEVEL < STAGE.height()) {
+                this.y += GRAVITY;
+                GRAVITY += 0.3;
             }
 
             if (this.y < 0) {
@@ -403,7 +435,7 @@ window.onload = function () {
         this.imgSrc = imageSource;
 
         this.update = function () {
-            if (this.x <= (-stageWidth)) {
+            if (this.x <= (-STAGE_WIDTH)) {
                 this.x = -1;
             }
             this.x -= 0.1;
@@ -419,7 +451,7 @@ window.onload = function () {
         this.imgSrc = imageSource;
 
         this.update = function () {
-            if (this.x <= (-stageWidth)) {
+            if (this.x <= (-STAGE_WIDTH)) {
                 this.x = -1;
             }
             this.x -= this.speed;
@@ -446,10 +478,9 @@ window.onload = function () {
         });
 
         this.update = function () {
-            this.x -= gameSpeed; // magic number here
+            this.x -= GAME_SPEED;
         };
     }
-
 
     function playCrashSound() {
         $('.during-play-audio')[0].pause();
@@ -485,14 +516,14 @@ window.onload = function () {
         $('body').append(duringPlayAudio);
 
         $(document).on('click', function () {
-            if (currentState === gameStates.InGame) {
+            if (currentState === GAME_STATES.InGame) {
                 $('.mouse-click-audio')[0].play();
             }
         });
     }
 
     function initializeSvgObjects() {
-        var paper = Raphael('svg', stageWidth, stageHeight);
+        var paper = Raphael('svg', STAGE_WIDTH, STAGE_HEIGHT);
 
         var playButton = paper.rect(150, 200, 100, 60, 10),
             playButtonText = paper.text(200, 230, 'Play'),
@@ -526,7 +557,7 @@ window.onload = function () {
             })
         });
         playButtonSet.click(function () {
-            currentState = gameStates.InGame;
+            currentState = GAME_STATES.InGame;
             paper.remove();
             $('.button-click-audio')[0].play();
             $('.during-play-audio')[0].play();
@@ -537,45 +568,32 @@ window.onload = function () {
     function startGame() {
 
         loadHighScore();
-        currentState = gameStates.Menu;
-        ninjaHeight = ninjaWidth = (stageHeight / 8);
+        currentScore = 0;
+        frames = 0;
+        currentState = GAME_STATES.Menu;
+        ninjaHeight = ninjaWidth = (STAGE_HEIGHT / 8);
+
         initializeSvgObjects();
         initializeKineticObjects();
-
         initializeSound();
 
-        animation = new Kinetic.Animation(update, stage); //set time
+        animation = new Kinetic.Animation(update, STAGE);
 
-        //attach events
         $(document).on('click', function () {
-            //if(currentState === gameStates.Menu){
-            //    currentState = gameStates.InGame;
-            //    startMenuLayer.remove(playTextRect);
-            //    startMenuLayer.remove(playText);
-            //    //stage.remove(startMenuLayer);
-            //}
-            if (currentState === gameStates.InGame) {
+            if (currentState === GAME_STATES.InGame) {
                 ninja.jump();
             }
-            if (currentState === gameStates.GameOver) {
-            // restar the game
-                currentScore = 0;
-                currentResult.setText(currentScore);
-                stage.clear();
-                obstacles = [];
-                startGame();
-                       
-               
+            if (currentState === GAME_STATES.GameOver) {
+             
             }
         });
         //pause event 
         $(document).on('keydown', function (ev) {
             if (ev.keyCode === 80) {
                 togglePause();
-               stage.clear();
+                STAGE.clear();
             }
         });
     }
-
     startGame();
 };
